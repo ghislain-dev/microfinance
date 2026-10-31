@@ -6,8 +6,8 @@ namespace App\Domain\Organisation\Actions;
 
 use App\Domain\Organisation\Acces\Role;
 use App\Models\User;
+use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Audit\JournalAudit;
-use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
 
 /**
@@ -22,28 +22,26 @@ final class AttribuerRoles
      */
     public function executer(User $acteur, User $cible, array $roles): void
     {
-        // Droits évalués dans l'organisation de l'acteur ; la Policy exige que la cible y soit aussi.
-        $equipePrecedente = getPermissionsTeamId();
-        setPermissionsTeamId($acteur->organisation_id);
-        try {
-            Gate::forUser($acteur)->authorize('modifierRoles', $cible);
+        // La Policy exige aussi que la cible soit dans l'organisation de l'acteur.
+        AutoriserDansOrganisation::autoriser($acteur, 'modifierRoles', $cible);
 
-            foreach ($roles as $role) {
-                if (Role::tryFrom($role) === null) {
-                    throw new InvalidArgumentException("Rôle inconnu : {$role}");
-                }
+        foreach ($roles as $role) {
+            if (Role::tryFrom($role) === null) {
+                throw new InvalidArgumentException("Rôle inconnu : {$role}");
             }
+        }
 
+        // Les rôles s'attribuent dans l'organisation de la cible (spatie « teams »).
+        $equipePrecedente = getPermissionsTeamId();
+        setPermissionsTeamId($cible->organisation_id);
+        try {
             $avant = $cible->unsetRelation('roles')->getRoleNames()->sort()->values()->all();
             $cible->syncRoles($roles);
-
-            $this->journal->enregistrer('roles.modification', $cible,
-                avant: ['roles' => $avant],
-                apres: ['roles' => $cible->unsetRelation('roles')->getRoleNames()->sort()->values()->all()],
-                acteur: $acteur,
-            );
+            $apres = $cible->unsetRelation('roles')->getRoleNames()->sort()->values()->all();
         } finally {
             setPermissionsTeamId($equipePrecedente);
         }
+
+        $this->journal->enregistrer('roles.modification', $cible, avant: ['roles' => $avant], apres: ['roles' => $apres], acteur: $acteur);
     }
 }

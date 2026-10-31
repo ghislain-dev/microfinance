@@ -21,6 +21,9 @@ const MATRICE_PHASE_0 = [
     'audit.voir' => ['admin', 'gerant', 'comptable'],
     // Phase 1 (2026-10-31) : validation des extournes, pas par l'admin.
     'operations.extourner' => ['gerant', 'comptable'],
+    // Phase 1 (2026-10-31) : membres.
+    'membres.voir' => ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite'],
+    'membres.gerer' => ['admin', 'gerant', 'caissier'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

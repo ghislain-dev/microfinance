@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 final class JournalAudit
 {
     /** Attributs jamais écrits en clair dans le journal. */
-    private const MASQUES = ['password', 'remember_token', 'code_hache', 'token'];
+    private const MASQUES = ['password', 'remember_token', 'code_hache', 'token', 'piece_numero', 'piece_empreinte'];
 
     /**
      * @param  array<string, mixed>|null  $avant

@@ -82,3 +82,20 @@ it('ne crée qu’une opération pour 50 envois simultanés de la même clé', f
         ->and(Compte::withoutGlobalScopes()->findOrFail($epargne->id)->solde_cache->centimes)->toBe(900);
     artisan('finance:verifier-soldes')->assertSuccessful();
 })->group('mysql');
+
+it('attribue des numéros de membre sans trou ni doublon avec 20 inscriptions simultanées', function () {
+    $caissier = Tests\Support\Acteurs::avecRole('caissier');
+    $agence = App\Domain\Organisation\Models\Agence::factory()->for($caissier->organisation)->create(['code' => 'BUK']);
+    Auth::forgetUser();
+    $depart = (string) (microtime(true) + 3);
+    $script = base_path('tests/Concurrence/scripts/inscription.php');
+
+    $sorties = Process::pool(function (Pool $pool) use ($depart, $script, $caissier, $agence) {
+        foreach (range(1, 20) as $i) {
+            $pool->path(base_path())->timeout(120)
+                ->command([PHP_BINARY, $script, $depart, (string) $caissier->id, (string) $agence->id, (string) $i]);
+        }
+    })->start()->wait()->collect()->map(fn ($r) => trim($r->output()).trim($r->errorOutput()))->sort()->values()->all();
+
+    expect($sorties)->toBe(array_map(fn (int $i) => 'BUK-'.str_pad((string) $i, 6, '0', STR_PAD_LEFT), range(1, 20)));
+})->group('mysql');

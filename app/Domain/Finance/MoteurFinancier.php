@@ -16,6 +16,7 @@ use App\Domain\Finance\Models\Compte;
 use App\Domain\Finance\Models\Ecriture;
 use App\Domain\Finance\Models\Operation;
 use App\Models\User;
+use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Audit\JournalAudit;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
@@ -25,7 +26,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
 
 /**
@@ -121,14 +121,8 @@ final class MoteurFinancier
             throw new InvalidArgumentException('Motif d’extourne obligatoire (500 caractères au plus).');
         }
 
-        // Droits évalués dans l'organisation du validateur ; la Policy exige que l'opération y soit aussi.
-        $equipePrecedente = getPermissionsTeamId();
-        setPermissionsTeamId($validateur->organisation_id);
-        try {
-            Gate::forUser($validateur)->authorize('extourner', $origine);
-        } finally {
-            setPermissionsTeamId($equipePrecedente);
-        }
+        // La Policy exige aussi que l'opération soit dans l'organisation du validateur.
+        AutoriserDansOrganisation::autoriser($validateur, 'extourner', $origine);
 
         if ($origine->extourne()->exists()) {
             throw new DejaExtournee("L'opération {$origine->id} est déjà extournée.");
