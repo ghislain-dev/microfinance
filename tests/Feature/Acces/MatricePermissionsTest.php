@@ -24,6 +24,10 @@ const MATRICE_PHASE_0 = [
     // Phase 1 (2026-10-31) : membres.
     'membres.voir' => ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite'],
     'membres.gerer' => ['admin', 'gerant', 'caissier'],
+    // Phase 2 (2026-10-31) : caisses.
+    'caisses.gerer' => ['admin', 'gerant'],
+    'caisse.operer' => ['gerant', 'caissier'],
+    'caisse.valider_ecart' => ['gerant'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

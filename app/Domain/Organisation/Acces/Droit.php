@@ -19,4 +19,7 @@ enum Droit: string
     case OperationsExtourner = 'operations.extourner';
     case MembresVoir = 'membres.voir';
     case MembresGerer = 'membres.gerer';
+    case CaissesGerer = 'caisses.gerer';
+    case CaisseOperer = 'caisse.operer';
+    case CaisseValiderEcart = 'caisse.valider_ecart';
 }

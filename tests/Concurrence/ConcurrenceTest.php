@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Caisse\Models\SessionCaisse;
 use App\Domain\Finance\Comptes\NatureCompte;
 use App\Domain\Finance\LigneEcriture;
 use App\Domain\Finance\Models\Compte;
@@ -18,6 +19,7 @@ use Illuminate\Support\Str;
 use Tests\Support\Acteurs;
 use Tests\Support\DeuxOrganisations;
 use Tests\Support\GrandLivre;
+use Tests\Support\Guichet;
 
 use function Pest\Laravel\artisan;
 
@@ -100,4 +102,27 @@ it('attribue des numéros de membre sans trou ni doublon avec 20 inscriptions si
     })->start()->wait()->collect()->map(fn ($r) => trim($r->output()).trim($r->errorOutput()))->sort()->values()->all();
 
     expect($sorties)->toBe(array_map(fn (int $i) => 'BUK-'.str_pad((string) $i, 6, '0', STR_PAD_LEFT), range(1, 20)));
+})->group('mysql');
+
+it('n’ouvre qu’une session pour 10 ouvertures simultanées de la même caisse', function () {
+    $g = Guichet::creer();
+    // 10 caissiers différents, tous rattachés à l'agence de la caisse.
+    $caissiers = collect(range(1, 10))->map(function () use ($g) {
+        $c = Acteurs::avecRole('caissier', $g->organisation);
+        $c->agences()->attach($g->agence, ['organisation_id' => $g->organisation->id]);
+
+        return $c;
+    });
+    Auth::forgetUser();
+    $depart = (string) (microtime(true) + 3);
+    $script = base_path('tests/Concurrence/scripts/ouverture.php');
+
+    $sorties = Process::pool(function (Pool $pool) use ($caissiers, $depart, $script, $g) {
+        foreach ($caissiers as $caissier) {
+            $pool->path(base_path())->timeout(120)->command([PHP_BINARY, $script, $depart, (string) $caissier->id, (string) $g->caisse->id]);
+        }
+    })->start()->wait()->collect()->map(fn ($r) => trim($r->output()).trim($r->errorOutput()))->all();
+
+    expect(array_count_values($sorties))->toEqual(['OK' => 1, 'REFUS' => 9])
+        ->and(SessionCaisse::withoutGlobalScopes()->count())->toBe(1);
 })->group('mysql');

@@ -43,16 +43,17 @@ enum Role: string
             self::Admin => [
                 Droit::TableauDeBordVoir, Droit::OrganisationModifier, Droit::AgencesVoir, Droit::AgencesGerer,
                 Droit::UtilisateursVoir, Droit::UtilisateursGerer, Droit::AuditVoir,
-                Droit::MembresVoir, Droit::MembresGerer,
+                Droit::MembresVoir, Droit::MembresGerer, Droit::CaissesGerer,
             ],
             self::Gerant => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::UtilisateursVoir, Droit::AuditVoir,
                 Droit::OperationsExtourner, Droit::MembresVoir, Droit::MembresGerer,
+                Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
             ],
-            self::Caissier => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer],
+            self::Caissier => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer],
             self::Collecteur, self::AgentCredit, self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir],
             self::Membre => [],
         };
