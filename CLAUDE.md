@@ -124,7 +124,7 @@ Règles de dépendance entre modules :
 ## 8. Planification
 
 ### Phase 0 — Fondations (≈ 1 semaine)
-- [ ] Projet Laravel 13, PHP 8.3, Pint, PHPStan, Pest/PHPUnit, CI (tests + audit à chaque push)
+- [x] Projet Laravel 13, PHP 8.3, Pint, PHPStan, Pest/PHPUnit, CI (tests + audit à chaque push)
 - [ ] `.env.example`, configuration MySQL + SQLite de test
 - [ ] Organisations, agences, utilisateurs ; trait `AppartientAOrganisation` + scope global
 - [ ] Rôles et permissions (`spatie/laravel-permission`), Policies de base

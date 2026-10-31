@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualite:
+    name: Pint, PHPStan, audit, tests (SQLite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, pdo_sqlite, pdo_mysql, bcmath
+          coverage: none
+
+      - name: Dépendances
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Environnement
+        run: cp .env.example .env && php artisan key:generate
+
+      - name: Formatage (Pint)
+        run: ./vendor/bin/pint --test
+
+      - name: Analyse statique (PHPStan)
+        run: ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      - name: Failles connues (composer audit)
+        run: composer audit
+
+      - name: Tests (SQLite en mémoire)
+        run: php artisan test
