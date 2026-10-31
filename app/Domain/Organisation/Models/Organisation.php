@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Organisation\Models;
 
+use App\Domain\Organisation\Policies\OrganisationPolicy;
 use App\Models\User;
 use Database\Factories\OrganisationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 #[Fillable(['nom', 'code', 'actif'])]
 #[UseFactory(OrganisationFactory::class)]
+#[UsePolicy(OrganisationPolicy::class)]
 class Organisation extends Model
 {
     /** @use HasFactory<OrganisationFactory> */

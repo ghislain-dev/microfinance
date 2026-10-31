@@ -127,7 +127,7 @@ Règles de dépendance entre modules :
 - [x] Projet Laravel 13, PHP 8.3, Pint, PHPStan, Pest/PHPUnit, CI (tests + audit à chaque push)
 - [x] `.env.example`, configuration MySQL + SQLite de test
 - [x] Organisations, agences, utilisateurs ; trait `AppartientAOrganisation` + scope global
-- [ ] Rôles et permissions (`spatie/laravel-permission`), Policies de base
+- [x] Rôles et permissions (`spatie/laravel-permission`), Policies de base
 - [ ] Authentification web + OTP SMS, API Sanctum, `throttle`
 - [ ] Journal d'audit en insertion seule
 - [ ] Mise en page Bootstrap : layout, menu par rôle, tableau de bord vide
