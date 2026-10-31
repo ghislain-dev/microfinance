@@ -19,5 +19,5 @@
 - Code et devise d'un type sont figés après création ; les autres paramètres (minimums, frais)
   s'appliquent aux comptes existants au moment de chaque opération ; la durée de blocage ne vaut que pour
   les nouveaux comptes.
-- Ouverture refusée pour un membre non actif ou un type retiré (choix de prudence, à confirmer).
+- Ouverture refusée pour un membre non actif ou un type retiré (confirmé le 2026-10-31).
 - Rang attribué sous verrou du membre ; `UNIQUE(membre_id, type, rang)`.

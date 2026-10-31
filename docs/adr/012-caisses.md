@@ -22,7 +22,7 @@
 - Le solde théorique est le **solde réel** du compte de caisse (somme des écritures).
 - `billetages` et `ecarts_caisse` en insertion seule ; les sessions sont journalisées (audit).
 
-## Points ouverts
+## Décision complémentaire (confirmée le 2026-10-31)
 
-- Un écart constaté **à l'ouverture** est imputé au caissier qui ouvre (l'argent a pu disparaître entre
-  deux sessions) ; le gérant peut l'extourner ensuite si la responsabilité est autre. À confirmer.
+- Un écart constaté **à l'ouverture** est imputé au caissier qui ouvre la session ; le gérant peut
+  l'extourner ensuite si la responsabilité est autre.

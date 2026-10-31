@@ -21,7 +21,7 @@
 - Le solde minimum est jugé sur le solde réel, sous verrou du compte d'épargne.
 - Noms courts pour les clés composées : MySQL limite les identifiants à 64 caractères.
 
-## À confirmer
+## Décisions complémentaires (confirmées le 2026-10-31)
 
 - Sans seuil défini pour une devise, aucune validation n'est exigée.
 - Pas de frais sur les virements (seuls des frais de retrait sont paramétrés).
