@@ -29,6 +29,17 @@ class MouvementEpargne extends Model
     /** @var list<string> */
     protected $fillable = [];
 
+    public function libelleType(): string
+    {
+        return match ($this->type) {
+            'depot' => 'Dépôt',
+            'retrait' => 'Retrait',
+            'virement_sortant' => 'Virement émis',
+            'virement_entrant' => 'Virement reçu',
+            default => $this->type,
+        };
+    }
+
     /**
      * @return BelongsTo<CompteEpargne, $this>
      */

@@ -13,7 +13,7 @@ class DemandeDecaissementPolicy
 {
     public function viewAny(User $acteur): bool
     {
-        return $acteur->canAny([Droit::OperationsValiderDecaissement->value, Droit::CaisseOperer->value, Droit::EpargneVirer->value]);
+        return $acteur->can(Droit::OperationsValiderDecaissement->value);
     }
 
     /**

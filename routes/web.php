@@ -7,8 +7,11 @@ use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
 use App\Http\Controllers\Web\CompteEpargneController;
+use App\Http\Controllers\Web\DemandeDecaissementController;
 use App\Http\Controllers\Web\MembreController;
+use App\Http\Controllers\Web\OperationEpargneController;
 use App\Http\Controllers\Web\SessionCaisseController;
+use App\Http\Controllers\Web\SeuilValidationController;
 use App\Http\Controllers\Web\TypeCompteEpargneController;
 use Illuminate\Support\Facades\Route;
 
@@ -52,4 +55,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/epargne/types/{type}/modifier', [TypeCompteEpargneController::class, 'edit'])->whereNumber('type')->name('epargne.types.edit');
     Route::put('/epargne/types/{type}', [TypeCompteEpargneController::class, 'update'])->whereNumber('type')->name('epargne.types.update');
     Route::post('/membres/{membre}/comptes-epargne', [CompteEpargneController::class, 'store'])->whereNumber('membre')->name('membres.comptes-epargne.store');
+
+    Route::get('/comptes-epargne/{compteEpargne}', [OperationEpargneController::class, 'show'])->whereNumber('compteEpargne')->name('comptes-epargne.show');
+    Route::post('/comptes-epargne/{compteEpargne}/depots', [OperationEpargneController::class, 'deposer'])->whereNumber('compteEpargne')->name('comptes-epargne.depots');
+    Route::post('/comptes-epargne/{compteEpargne}/retraits', [OperationEpargneController::class, 'retirer'])->whereNumber('compteEpargne')->name('comptes-epargne.retraits');
+    Route::post('/comptes-epargne/{compteEpargne}/virements', [OperationEpargneController::class, 'virer'])->whereNumber('compteEpargne')->name('comptes-epargne.virements');
+
+    Route::get('/demandes', [DemandeDecaissementController::class, 'index'])->name('demandes.index');
+    Route::post('/demandes/{demande}/approuver', [DemandeDecaissementController::class, 'approuver'])->whereNumber('demande')->name('demandes.approuver');
+    Route::post('/demandes/{demande}/rejeter', [DemandeDecaissementController::class, 'rejeter'])->whereNumber('demande')->name('demandes.rejeter');
+    Route::post('/demandes/{demande}/payer', [OperationEpargneController::class, 'payer'])->whereNumber('demande')->name('demandes.payer');
+
+    Route::get('/epargne/seuils', [SeuilValidationController::class, 'index'])->name('epargne.seuils');
+    Route::post('/epargne/seuils', [SeuilValidationController::class, 'store']);
 });

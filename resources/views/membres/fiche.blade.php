@@ -43,7 +43,7 @@
                 <tbody>
                     @forelse ($comptes as ['compte' => $compte, 'solde' => $solde])
                         <tr>
-                            <td>{{ $compte->numero }}</td>
+                            <td><a href="{{ route('comptes-epargne.show', $compte) }}">{{ $compte->numero }}</a></td>
                             <td>{{ $compte->type->libelle }}</td>
                             <td class="text-end">{{ $solde->formate() }}</td>
                             <td>
