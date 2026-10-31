@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
+use App\Domain\Change\Actions\Convertir;
+use App\Domain\Change\Models\TauxChange;
 use App\Domain\Epargne\Actions\Deposer;
 use App\Domain\Epargne\Actions\Retirer;
 use App\Domain\Epargne\Actions\Virer;
@@ -39,7 +41,31 @@ class OperationEpargneController extends Controller
             'aPayer' => DemandeDecaissement::query()->where('compte_epargne_id', $compteEpargne->id)
                 ->where('type', 'retrait')->where('statut', StatutDemande::Approuvee->value)->get(),
             'cle' => (string) Str::uuid(),
+            // Change : comptes du même membre dans l'autre devise, au taux du jour.
+            'destinationsChange' => CompteEpargne::query()->with('type:id,code,devise')
+                ->where('membre_id', $compteEpargne->membre_id)->whereKeyNot($compteEpargne->id)->get()
+                ->filter(fn (CompteEpargne $c) => $c->type->devise !== $compteEpargne->type->devise)->values(),
+            'tauxDuJour' => TauxChange::duJour(),
         ]);
+    }
+
+    public function convertir(OperationEpargneRequest $request, CompteEpargne $compteEpargne, Convertir $convertir): RedirectResponse
+    {
+        $destination = CompteEpargne::query()->find($request->integer('destination_id'));
+        if ($destination === null) {
+            return back()->withInput()->withErrors(['montant' => 'Choisissez le compte qui recevra la conversion.']);
+        }
+        Gate::authorize('virer', [CompteEpargne::class, $compteEpargne, $destination]);
+
+        try {
+            $conversion = $convertir->executer($this->acteur($request), $compteEpargne, $destination,
+                $request->montant($compteEpargne->type->devise), $request->string('cle')->value());
+        } catch (CompteEpargneRefuse|RefusFinancier $e) {
+            return back()->withInput()->withErrors(['montant' => $e->getMessage()]);
+        }
+
+        return to_route('comptes-epargne.show', $compteEpargne)
+            ->with('statut', "Change effectué : {$conversion->montant_source->formate()} → {$conversion->montant_destination->formate()}.");
     }
 
     public function deposer(OperationEpargneRequest $request, CompteEpargne $compteEpargne, Deposer $deposer): RedirectResponse

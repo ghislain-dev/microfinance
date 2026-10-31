@@ -24,6 +24,7 @@ class OperationEpargneRequest extends FormRequest
             'montant' => ['required', new MontantSaisi],
             'cle' => ['required', 'uuid'],
             'destination' => $this->routeIs('comptes-epargne.virements') ? ['required', 'string', 'max:60'] : [],
+            'destination_id' => $this->routeIs('comptes-epargne.conversions') ? ['required', 'integer'] : [],
         ];
     }
 

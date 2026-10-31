@@ -26,4 +26,5 @@ enum Droit: string
     case EpargneOuvrirCompte = 'epargne.ouvrir_compte';
     case EpargneVirer = 'epargne.virer';
     case OperationsValiderDecaissement = 'operations.valider_decaissement';
+    case ChangeSaisirTaux = 'change.saisir_taux';
 }

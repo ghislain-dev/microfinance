@@ -22,6 +22,7 @@ final class MenuPrincipal
             [new EntreeMenu('Membres', 'membres.index'), Droit::MembresVoir],
             [new EntreeMenu('Caisses', 'caisses.index'), [Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart]],
             [new EntreeMenu('Demandes à valider', 'demandes.index'), Droit::OperationsValiderDecaissement],
+            [new EntreeMenu('Taux de change', 'change.index'), [Droit::ChangeSaisirTaux, Droit::EpargneVirer]],
             [new EntreeMenu('Produits d’épargne', 'epargne.types.index'), Droit::EpargneParametrer],
             [new EntreeMenu('Organisation', 'organisation.show'), Droit::OrganisationModifier],
             [new EntreeMenu('Agences', null), Droit::AgencesVoir],

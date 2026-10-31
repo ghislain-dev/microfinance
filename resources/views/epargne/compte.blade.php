@@ -52,6 +52,39 @@
         @endcan
     </div>
 
+    @if ($destinationsChange->isNotEmpty())
+        @can('virer', [App\Domain\Epargne\Models\CompteEpargne::class, $compte, $compte])
+            <form method="POST" action="{{ route('comptes-epargne.conversions', $compte) }}" class="card card-body mb-4">
+                @csrf
+                <input type="hidden" name="cle" value="{{ $cle }}">
+                <h2 class="h6">Convertir vers un autre compte du membre</h2>
+                <p class="small text-body-secondary mb-2">
+                    @if ($tauxDuJour)
+                        Taux du jour : {{ $compte->type->devise->value === 'USD' ? 'achat '.$tauxDuJour->achat()->formate() : 'vente '.$tauxDuJour->vente()->formate() }} CDF pour 1 USD
+                        (montant reçu arrondi au centime inférieur).
+                    @else
+                        Aucun taux saisi aujourd’hui : conversion impossible.
+                    @endif
+                </p>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label for="destination_id" class="form-label small">Compte destinataire</label>
+                        <select id="destination_id" name="destination_id" required class="form-select">
+                            @foreach ($destinationsChange as $destination)
+                                <option value="{{ $destination->id }}">{{ $destination->numero }} ({{ $destination->type->devise->value }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="montant-change" class="form-label small">Montant ({{ $compte->type->devise->value }})</label>
+                        <input id="montant-change" name="montant" inputmode="decimal" required placeholder="0,00" class="form-control">
+                    </div>
+                    <div class="col-auto"><button type="submit" class="btn btn-outline-secondary">Convertir</button></div>
+                </div>
+            </form>
+        @endcan
+    @endif
+
     <div class="card">
         <div class="card-header">Mouvements</div>
         <div class="table-responsive">

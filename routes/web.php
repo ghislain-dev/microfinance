@@ -6,6 +6,7 @@ use App\Domain\Organisation\Acces\Droit;
 use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
+use App\Http\Controllers\Web\ChangeController;
 use App\Http\Controllers\Web\CompteEpargneController;
 use App\Http\Controllers\Web\DemandeDecaissementController;
 use App\Http\Controllers\Web\MembreController;
@@ -62,6 +63,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/comptes-epargne/{compteEpargne}/depots', [OperationEpargneController::class, 'deposer'])->whereNumber('compteEpargne')->name('comptes-epargne.depots');
     Route::post('/comptes-epargne/{compteEpargne}/retraits', [OperationEpargneController::class, 'retirer'])->whereNumber('compteEpargne')->name('comptes-epargne.retraits');
     Route::post('/comptes-epargne/{compteEpargne}/virements', [OperationEpargneController::class, 'virer'])->whereNumber('compteEpargne')->name('comptes-epargne.virements');
+    Route::post('/comptes-epargne/{compteEpargne}/conversions', [OperationEpargneController::class, 'convertir'])->whereNumber('compteEpargne')->name('comptes-epargne.conversions');
+
+    Route::get('/change', [ChangeController::class, 'index'])->name('change.index');
+    Route::post('/change', [ChangeController::class, 'store']);
 
     Route::get('/demandes', [DemandeDecaissementController::class, 'index'])->name('demandes.index');
     Route::post('/demandes/{demande}/approuver', [DemandeDecaissementController::class, 'approuver'])->whereNumber('demande')->name('demandes.approuver');

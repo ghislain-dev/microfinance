@@ -18,6 +18,7 @@ enum NatureCompte: string
     case Pret = 'pret';
     case CreanceMembre = 'creance_membre';
     case CreancePersonnel = 'creance_personnel'; // manquants de caisse imputés au caissier (2026-10-31)
+    case PositionChange = 'position_change';     // contrepartie des conversions USD/CDF, une par devise
     case Produit = 'produit';
     case Charge = 'charge';
 
@@ -28,7 +29,7 @@ enum NatureCompte: string
     public function sens(): Sens
     {
         return match ($this) {
-            self::Caisse, self::Pret, self::CreanceMembre, self::CreancePersonnel, self::Charge => Sens::Debit,
+            self::Caisse, self::Pret, self::CreanceMembre, self::CreancePersonnel, self::PositionChange, self::Charge => Sens::Debit,
             self::Epargne, self::PartsSociales, self::CycleTontine, self::FondsSocial, self::Produit => Sens::Credit,
         };
     }
@@ -52,6 +53,7 @@ enum NatureCompte: string
             self::Pret => 'Prêt',
             self::CreanceMembre => 'Créance sur membre',
             self::CreancePersonnel => 'Créance sur le personnel',
+            self::PositionChange => 'Position de change',
             self::Produit => 'Produit',
             self::Charge => 'Charge',
         };

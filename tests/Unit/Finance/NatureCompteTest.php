@@ -12,6 +12,7 @@ it('donne le sens normal de chaque nature', function (NatureCompte $nature, Sens
     [NatureCompte::Pret, Sens::Debit],
     [NatureCompte::CreanceMembre, Sens::Debit],
     [NatureCompte::CreancePersonnel, Sens::Debit],
+    [NatureCompte::PositionChange, Sens::Debit],
     [NatureCompte::Charge, Sens::Debit],
     [NatureCompte::Epargne, Sens::Credit],
     [NatureCompte::PartsSociales, Sens::Credit],
