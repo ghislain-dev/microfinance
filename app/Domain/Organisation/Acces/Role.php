@@ -50,13 +50,15 @@ enum Role: string
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::UtilisateursVoir, Droit::AuditVoir,
                 Droit::OperationsExtourner, Droit::MembresVoir, Droit::MembresGerer,
                 Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart,
-                Droit::EpargneParametrer, Droit::EpargneOuvrirCompte,
+                Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::EpargneVirer, Droit::OperationsValiderDecaissement,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
+                Droit::OperationsValiderDecaissement,
             ],
             self::Caissier => [
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,
+                Droit::EpargneVirer,
             ],
             self::Collecteur, self::AgentCredit, self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir],
             self::Membre => [],

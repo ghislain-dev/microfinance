@@ -24,4 +24,6 @@ enum Droit: string
     case CaisseValiderEcart = 'caisse.valider_ecart';
     case EpargneParametrer = 'epargne.parametrer';
     case EpargneOuvrirCompte = 'epargne.ouvrir_compte';
+    case EpargneVirer = 'epargne.virer';
+    case OperationsValiderDecaissement = 'operations.valider_decaissement';
 }

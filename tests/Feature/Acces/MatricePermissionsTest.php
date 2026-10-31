@@ -31,6 +31,8 @@ const MATRICE_PHASE_0 = [
     // Phase 2 (2026-10-31) : épargne.
     'epargne.parametrer' => ['admin', 'gerant'],
     'epargne.ouvrir_compte' => ['admin', 'gerant', 'caissier'],
+    'epargne.virer' => ['gerant', 'caissier'],
+    'operations.valider_decaissement' => ['gerant', 'comptable'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

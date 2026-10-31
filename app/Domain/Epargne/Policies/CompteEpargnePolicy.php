@@ -18,6 +18,21 @@ class CompteEpargnePolicy
     }
 
     /**
+     * Dépôt et retrait en espèces : caissier ou gérant (tenue de caisse).
+     */
+    public function operer(User $acteur, CompteEpargne $compte): bool
+    {
+        return $compte->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CaisseOperer->value);
+    }
+
+    public function virer(User $acteur, CompteEpargne $source, CompteEpargne $destination): bool
+    {
+        return $source->organisation_id === $acteur->organisation_id
+            && $destination->organisation_id === $acteur->organisation_id
+            && $acteur->can(Droit::EpargneVirer->value);
+    }
+
+    /**
      * Ouvrir un compte : admin, gérant ou caissier ; membre et type de son organisation.
      */
     public function create(User $acteur, ?Membre $membre = null, ?TypeCompteEpargne $type = null): bool

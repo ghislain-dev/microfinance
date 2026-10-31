@@ -111,6 +111,14 @@ final class MoteurFinancier
     }
 
     /**
+     * Opération déjà enregistrée sous cette clé (un module peut ainsi rejouer une saisie sans rien recréer).
+     */
+    public function dejaEnregistree(string $cle): ?Operation
+    {
+        return $this->parCle($cle);
+    }
+
+    /**
      * Annule une opération par une opération inverse, datée du jour, validée par une seconde personne
      * (CLAUDE.md §4.3 et §4.7). L'origine n'est jamais modifiée.
      */
