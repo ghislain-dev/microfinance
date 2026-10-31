@@ -21,7 +21,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Environnement
-        run: cp .env.example .env && php artisan key:generate
+        run: cp .env.example .env && php artisan key:generate --force
 
       - name: Formatage (Pint)
         run: ./vendor/bin/pint --test
@@ -34,3 +34,44 @@ jobs:
 
       - name: Tests (SQLite en mémoire)
         run: php artisan test
+
+  mysql:
+    name: Tests MySQL 8.4 (concurrence, verrous, triggers)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: racine_ci
+          MYSQL_DATABASE: microfinance_test
+          MYSQL_USER: microfinance
+          MYSQL_PASSWORD: microfinance_ci
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-retries=20
+    env:
+      DB_USERNAME: microfinance
+      DB_PASSWORD: microfinance_ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, pdo_mysql, bcmath
+          coverage: none
+
+      - name: Dépendances
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Environnement
+        run: cp .env.example .env && php artisan key:generate --force
+
+      # Les services GitHub n'acceptent pas d'option de démarrage : on autorise les triggers ici.
+      - name: Autoriser la création de triggers (binlog)
+        run: mysql -h 127.0.0.1 -P 3307 -uroot -pracine_ci -e "SET GLOBAL log_bin_trust_function_creators = 1;"
+
+      - name: Tests MySQL
+        run: composer test:mysql

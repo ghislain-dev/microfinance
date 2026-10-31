@@ -1,0 +1,32 @@
+# Services de développement et de test : MySQL 8.4 (comme en production) et Redis.
+#   docker compose up -d
+# Base « microfinance » pour le développement, « microfinance_test » pour `composer test:mysql`.
+services:
+  mysql:
+    image: mysql:8.4
+    # Triggers « insertion seule » créés par les migrations avec l'utilisateur applicatif (binlog actif).
+    command: ["--log-bin-trust-function-creators=1"]
+    container_name: microfinance_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-racine_locale}
+      MYSQL_DATABASE: microfinance
+      MYSQL_USER: ${DB_USERNAME:-microfinance}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-microfinance_local}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - microfinance_mysql:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    image: redis:8-alpine
+    container_name: microfinance_redis
+    ports:
+      - "127.0.0.1:6379:6379"
+
+volumes:
+  microfinance_mysql:
