@@ -21,6 +21,7 @@ final class MenuPrincipal
             [new EntreeMenu('Tableau de bord', 'tableau-de-bord'), Droit::TableauDeBordVoir],
             [new EntreeMenu('Membres', 'membres.index'), Droit::MembresVoir],
             [new EntreeMenu('Caisses', 'caisses.index'), [Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart]],
+            [new EntreeMenu('Produits d’épargne', 'epargne.types.index'), Droit::EpargneParametrer],
             [new EntreeMenu('Agences', null), Droit::AgencesVoir],
             [new EntreeMenu('Utilisateurs', null), Droit::UtilisateursVoir],
             [new EntreeMenu('Journal d’audit', null), Droit::AuditVoir],

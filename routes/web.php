@@ -6,8 +6,10 @@ use App\Domain\Organisation\Acces\Droit;
 use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
+use App\Http\Controllers\Web\CompteEpargneController;
 use App\Http\Controllers\Web\MembreController;
 use App\Http\Controllers\Web\SessionCaisseController;
+use App\Http\Controllers\Web\TypeCompteEpargneController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -43,4 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/sessions-caisse/{sessionCaisse}', [SessionCaisseController::class, 'show'])->whereNumber('sessionCaisse')->name('sessions-caisse.show');
     Route::post('/sessions-caisse/{sessionCaisse}/cloturer', [SessionCaisseController::class, 'cloturer'])->whereNumber('sessionCaisse')->name('sessions-caisse.cloturer');
     Route::post('/sessions-caisse/{sessionCaisse}/valider', [SessionCaisseController::class, 'valider'])->whereNumber('sessionCaisse')->name('sessions-caisse.valider');
+
+    Route::get('/epargne/types', [TypeCompteEpargneController::class, 'index'])->name('epargne.types.index');
+    Route::get('/epargne/types/creer', [TypeCompteEpargneController::class, 'create'])->name('epargne.types.create');
+    Route::post('/epargne/types', [TypeCompteEpargneController::class, 'store'])->name('epargne.types.store');
+    Route::get('/epargne/types/{type}/modifier', [TypeCompteEpargneController::class, 'edit'])->whereNumber('type')->name('epargne.types.edit');
+    Route::put('/epargne/types/{type}', [TypeCompteEpargneController::class, 'update'])->whereNumber('type')->name('epargne.types.update');
+    Route::post('/membres/{membre}/comptes-epargne', [CompteEpargneController::class, 'store'])->whereNumber('membre')->name('membres.comptes-epargne.store');
 });

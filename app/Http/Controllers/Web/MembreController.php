@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
+use App\Domain\Epargne\Models\TypeCompteEpargne;
+use App\Domain\Epargne\Services\ComptesDuMembre;
 use App\Domain\Membres\Actions\ChangerStatutMembre;
 use App\Domain\Membres\Actions\InscrireMembre;
 use App\Domain\Membres\Actions\ModifierMembre;
@@ -66,11 +68,16 @@ class MembreController extends Controller
         ));
     }
 
-    public function show(Membre $membre): View
+    public function show(Membre $membre, ComptesDuMembre $comptes): View
     {
         Gate::authorize('view', $membre);
 
-        return view('membres.fiche', ['membre' => $membre->load('agence'), 'statuts' => StatutMembre::cases()]);
+        return view('membres.fiche', [
+            'membre' => $membre->load('agence'),
+            'statuts' => StatutMembre::cases(),
+            'comptes' => $comptes->pour($membre),
+            'typesProposes' => TypeCompteEpargne::query()->where('actif', true)->orderBy('code')->get(),
+        ]);
     }
 
     public function edit(Membre $membre): View

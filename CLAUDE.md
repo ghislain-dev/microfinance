@@ -142,7 +142,7 @@ Règles de dépendance entre modules :
 - [x] Tests : équilibre, idempotence ×10, concurrence 50 retraits (MySQL)
 
 ### Phase 2 — Épargne et caisse (≈ 2 semaines)
-- [ ] Types de comptes paramétrables, dépôt, retrait, virement, reçu PDF
+- [ ] Types de comptes paramétrables (fait), dépôt, retrait, virement, reçu PDF
 - [x] Caisses, ouverture/clôture de session, billetage, écart bloquant
 - [ ] Taux de change du jour, opérations USD/CDF
 - [ ] Intérêts / ristournes sur épargne

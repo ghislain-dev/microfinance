@@ -35,6 +35,52 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-header">Comptes d’épargne</div>
+        <div class="table-responsive">
+            <table class="table mb-0 align-middle">
+                <thead><tr><th>Numéro</th><th>Produit</th><th class="text-end">Solde</th><th>Blocage</th></tr></thead>
+                <tbody>
+                    @forelse ($comptes as ['compte' => $compte, 'solde' => $solde])
+                        <tr>
+                            <td>{{ $compte->numero }}</td>
+                            <td>{{ $compte->type->libelle }}</td>
+                            <td class="text-end">{{ $solde->formate() }}</td>
+                            <td>
+                                @if ($compte->bloque_jusqu_au)
+                                    Bloqué jusqu’au {{ $compte->bloque_jusqu_au->format('d/m/Y') }}
+                                @else
+                                    <span class="text-body-secondary">Libre</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="text-center text-body-secondary py-3">Aucun compte.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @can('create', [App\Domain\Epargne\Models\CompteEpargne::class, $membre])
+            <form method="POST" action="{{ route('membres.comptes-epargne.store', $membre) }}" class="card-footer">
+                @csrf
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label for="type_compte_epargne_id" class="form-label">Ouvrir un compte</label>
+                        <select id="type_compte_epargne_id" name="type_compte_epargne_id" required
+                                @class(['form-select', 'is-invalid' => $errors->has('type_compte_epargne_id')])>
+                            <option value=""></option>
+                            @foreach ($typesProposes as $type)
+                                <option value="{{ $type->id }}">{{ $type->code }} — {{ $type->libelle }} ({{ $type->devise->value }})</option>
+                            @endforeach
+                        </select>
+                        @error('type_compte_epargne_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-auto"><button type="submit" class="btn btn-outline-primary">Ouvrir</button></div>
+                </div>
+            </form>
+        @endcan
+    </div>
+
     @can('changerStatut', $membre)
         <form method="POST" action="{{ route('membres.statut', $membre) }}" class="card card-body">
             @csrf
