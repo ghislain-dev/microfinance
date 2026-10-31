@@ -135,7 +135,7 @@ Règles de dépendance entre modules :
 ### Phase 1 — Membres et moteur financier (≈ 3 semaines)
 - [ ] Membres : CRUD, numéro unique, détection de doublons (téléphone, pièce), statuts
 - [x] Value object `Montant` (ou `brick/money`), plan de comptes, table `comptes`
-- [ ] `operations` + `ecritures` (insertion seule, triggers MySQL anti-UPDATE/DELETE)
+- [x] `operations` + `ecritures` (insertion seule, triggers MySQL anti-UPDATE/DELETE)
 - [ ] `MoteurFinancier::executer()` : transaction, verrous, équilibre, idempotence
 - [ ] Extourne avec validation 4 yeux
 - [ ] Commande `finance:verifier-soldes` planifiée chaque nuit

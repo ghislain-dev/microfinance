@@ -24,3 +24,24 @@ it('n’utilise aucun type ou cast float dans le code métier', function () {
 
     expect($fautifs)->toBe([]);
 });
+
+// CLAUDE.md §3 : seul Domain/Finance écrit dans operations et ecritures.
+arch('Operation et Ecriture ne sont utilisés que dans Domain/Finance', function () {
+    expect(['App\Domain\Finance\Models\Operation', 'App\Domain\Finance\Models\Ecriture'])
+        ->toOnlyBeUsedIn('App\Domain\Finance');
+});
+
+it('n’écrit jamais dans operations ou ecritures par DB::table hors de Domain/Finance', function () {
+    $fautifs = [];
+    $fichiers = new RegexIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__DIR__, 2).'/app')), '/\.php$/');
+    foreach ($fichiers as $fichier) {
+        if (str_contains($fichier->getPathname(), '/app/Domain/Finance/')) {
+            continue;
+        }
+        if (preg_match('/[\'"](operations|ecritures)[\'"]/', (string) file_get_contents($fichier->getPathname()))) {
+            $fautifs[] = $fichier->getPathname();
+        }
+    }
+
+    expect($fautifs)->toBe([]);
+});
