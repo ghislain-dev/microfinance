@@ -28,4 +28,6 @@ enum Droit: string
     case OperationsValiderDecaissement = 'operations.valider_decaissement';
     case ChangeSaisirTaux = 'change.saisir_taux';
     case EpargneRemuneration = 'epargne.remuneration';
+    case TontinesGerer = 'tontines.gerer';
+    case TontinesValider = 'tontines.valider';
 }

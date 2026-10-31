@@ -35,6 +35,9 @@ const MATRICE_PHASE_0 = [
     'operations.valider_decaissement' => ['gerant', 'comptable'],
     'change.saisir_taux' => ['gerant', 'comptable'],
     'epargne.remuneration' => ['gerant', 'comptable'],
+    // Phase 3 (2026-10-31) : tontines.
+    'tontines.gerer' => ['admin', 'gerant'],
+    'tontines.valider' => ['comite'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

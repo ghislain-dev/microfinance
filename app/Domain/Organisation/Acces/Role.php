@@ -44,14 +44,14 @@ enum Role: string
                 Droit::TableauDeBordVoir, Droit::OrganisationModifier, Droit::AgencesVoir, Droit::AgencesGerer,
                 Droit::UtilisateursVoir, Droit::UtilisateursGerer, Droit::AuditVoir,
                 Droit::MembresVoir, Droit::MembresGerer, Droit::CaissesGerer,
-                Droit::EpargneParametrer, Droit::EpargneOuvrirCompte,
+                Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::TontinesGerer,
             ],
             self::Gerant => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::UtilisateursVoir, Droit::AuditVoir,
                 Droit::OperationsExtourner, Droit::MembresVoir, Droit::MembresGerer,
                 Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart,
                 Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::EpargneVirer, Droit::OperationsValiderDecaissement,
-                Droit::ChangeSaisirTaux, Droit::EpargneRemuneration,
+                Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::TontinesGerer,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
@@ -61,7 +61,8 @@ enum Role: string
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,
                 Droit::EpargneVirer,
             ],
-            self::Collecteur, self::AgentCredit, self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir],
+            self::Collecteur, self::AgentCredit => [Droit::TableauDeBordVoir, Droit::MembresVoir],
+            self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::TontinesValider],
             self::Membre => [],
         };
     }
