@@ -19,6 +19,20 @@ enum Role: string
     case Comite = 'comite';
     case Membre = 'membre'; // aucun accès web : application mobile uniquement
 
+    public function libelle(): string
+    {
+        return match ($this) {
+            self::Admin => 'Administrateur',
+            self::Gerant => 'Gérant',
+            self::Comptable => 'Comptable',
+            self::Caissier => 'Caissier',
+            self::Collecteur => 'Collecteur',
+            self::AgentCredit => 'Agent de crédit',
+            self::Comite => 'Comité',
+            self::Membre => 'Membre',
+        };
+    }
+
     /**
      * @return list<Droit>
      */

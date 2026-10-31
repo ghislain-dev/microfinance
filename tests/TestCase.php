@@ -9,6 +9,14 @@ use RuntimeException;
 
 abstract class TestCase extends BaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Les ressources compilées (npm run build) ne sont pas nécessaires aux tests.
+        $this->withoutVite();
+    }
+
     /**
      * Vérifie la base avant que RefreshDatabase ne la vide.
      *

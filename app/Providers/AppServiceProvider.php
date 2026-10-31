@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Http\Controllers\Web\Auth\ConnexionController;
+use App\Http\Navigation\MenuPrincipal;
 use App\Models\User;
 use App\Support\Sms\CanalSms;
 use App\Support\Sms\EnvoyeurSms;
@@ -14,12 +15,15 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\View\View as Vue;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
@@ -61,6 +65,16 @@ class AppServiceProvider extends ServiceProvider
         Notification::extend('sms', fn (Application $app) => new CanalSms($app->make(EnvoyeurSms::class)));
 
         $this->limiterLesRequetes();
+
+        // Pages connectées : utilisateur (organisation et agences chargées d'avance) et menu, pour toutes
+        // les vues (la page est calculée avant sa mise en page).
+        View::composer('*', function (Vue $vue) {
+            $utilisateur = Auth::user();
+            if ($utilisateur instanceof User) {
+                $utilisateur->loadMissing(['organisation', 'agences']);
+                $vue->with(['utilisateur' => $utilisateur, 'menu' => MenuPrincipal::pour($utilisateur)]);
+            }
+        });
 
         if ($this->app->isProduction()) {
             URL::forceScheme('https');

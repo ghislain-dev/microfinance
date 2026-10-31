@@ -130,7 +130,7 @@ Règles de dépendance entre modules :
 - [x] Rôles et permissions (`spatie/laravel-permission`), Policies de base
 - [x] Authentification web + OTP SMS, API Sanctum, `throttle` (OTP par e-mail, canal SMS prêt)
 - [x] Journal d'audit en insertion seule
-- [ ] Mise en page Bootstrap : layout, menu par rôle, tableau de bord vide
+- [x] Mise en page Bootstrap : layout, menu par rôle, tableau de bord vide
 
 ### Phase 1 — Membres et moteur financier (≈ 3 semaines)
 - [ ] Membres : CRUD, numéro unique, détection de doublons (téléphone, pièce), statuts

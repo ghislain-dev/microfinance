@@ -35,6 +35,14 @@ jobs:
       - name: Tests (SQLite en mémoire)
         run: php artisan test
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Ressources web (Bootstrap via Vite)
+        run: npm ci && npm audit --audit-level=high && npm run build
+
   mysql:
     name: Tests MySQL 8.4 (concurrence, verrous, triggers)
     runs-on: ubuntu-latest
