@@ -7,6 +7,7 @@ namespace App\Domain\Organisation\Services;
 use App\Domain\Organisation\Models\CodeOtp;
 use App\Domain\Organisation\Notifications\CodeOtpNotification;
 use App\Models\User;
+use App\Support\Audit\JournalAudit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\DB;
  */
 final class ServiceOtp
 {
+    public function __construct(private readonly JournalAudit $journal) {}
+
     /**
      * Émet et envoie un nouveau code ; les codes précédents deviennent invalides.
      * Renvoie false si un code a été émis il y a moins de otp.delai_renvoi_secondes (rien n'est envoyé).
@@ -59,6 +62,7 @@ final class ServiceOtp
 
             if (! hash_equals($ligne->code_hache, $this->hacher($saisie))) {
                 $ligne->increment('tentatives');
+                $this->journal->enregistrer('otp.echec', $utilisateur, apres: ['tentatives' => $ligne->tentatives], acteur: $utilisateur);
 
                 return ResultatOtp::Incorrect;
             }

@@ -6,6 +6,7 @@ namespace App\Domain\Organisation\Actions;
 
 use App\Domain\Organisation\Acces\Role;
 use App\Models\User;
+use App\Support\Audit\JournalAudit;
 use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
 
@@ -14,6 +15,8 @@ use InvalidArgumentException;
  */
 final class AttribuerRoles
 {
+    public function __construct(private readonly JournalAudit $journal = new JournalAudit) {}
+
     /**
      * @param  list<string>  $roles
      */
@@ -31,7 +34,14 @@ final class AttribuerRoles
                 }
             }
 
-            $cible->unsetRelation('roles')->syncRoles($roles);
+            $avant = $cible->unsetRelation('roles')->getRoleNames()->sort()->values()->all();
+            $cible->syncRoles($roles);
+
+            $this->journal->enregistrer('roles.modification', $cible,
+                avant: ['roles' => $avant],
+                apres: ['roles' => $cible->unsetRelation('roles')->getRoleNames()->sort()->values()->all()],
+                acteur: $acteur,
+            );
         } finally {
             setPermissionsTeamId($equipePrecedente);
         }

@@ -6,6 +6,7 @@ namespace App\Domain\Organisation\Models;
 
 use App\Domain\Organisation\Policies\AgencePolicy;
 use App\Models\User;
+use App\Support\Audit\EstAudite;
 use App\Support\MultiOrganisation\AppartientAOrganisation;
 use Database\Factories\AgenceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[UsePolicy(AgencePolicy::class)]
 class Agence extends Model
 {
-    use AppartientAOrganisation;
+    use AppartientAOrganisation, EstAudite;
 
     /** @use HasFactory<AgenceFactory> */
     use HasFactory;

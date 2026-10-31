@@ -7,6 +7,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Domain\Organisation\Models\Agence;
 use App\Domain\Organisation\Policies\UserPolicy;
+use App\Support\Audit\EstAudite;
 use App\Support\MultiOrganisation\AppartientAOrganisation;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -24,7 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[UsePolicy(UserPolicy::class)]
 class User extends Authenticatable
 {
-    use AppartientAOrganisation;
+    use AppartientAOrganisation, EstAudite;
 
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
