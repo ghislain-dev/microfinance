@@ -35,7 +35,7 @@ class OperationEpargneController extends Controller
         return view('epargne.compte', [
             'compte' => $compteEpargne,
             'solde' => $moteur->soldeReel($compteEpargne->compte),
-            'mouvements' => MouvementEpargne::query()->where('compte_epargne_id', $compteEpargne->id)->latest('id')->paginate(25),
+            'mouvements' => MouvementEpargne::query()->with('recu:id,mouvement_epargne_id,numero')->where('compte_epargne_id', $compteEpargne->id)->latest('id')->paginate(25),
             'aPayer' => DemandeDecaissement::query()->where('compte_epargne_id', $compteEpargne->id)
                 ->where('type', 'retrait')->where('statut', StatutDemande::Approuvee->value)->get(),
             'cle' => (string) Str::uuid(),

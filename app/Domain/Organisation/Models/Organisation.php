@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Organisation cliente (tontine, AVEC, coopérative, microfinance) : la frontière d'isolement des données.
+ *
+ * @property string|null $logo_chemin
  */
 #[Fillable(['nom', 'code', 'actif'])]
 #[UseFactory(OrganisationFactory::class)]

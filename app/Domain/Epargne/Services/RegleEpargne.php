@@ -11,6 +11,7 @@ use App\Domain\Epargne\Models\CompteEpargne;
 use App\Domain\Epargne\Models\DemandeDecaissement;
 use App\Domain\Epargne\Models\MouvementEpargne;
 use App\Domain\Epargne\Models\SeuilValidation;
+use App\Domain\Epargne\Recus\EmettreRecu;
 use App\Domain\Epargne\StatutDemande;
 use App\Domain\Membres\StatutMembre;
 use App\Models\User;
@@ -21,6 +22,8 @@ use App\Support\Montant\Montant;
  */
 final class RegleEpargne
 {
+    public function __construct(private readonly EmettreRecu $recus) {}
+
     /**
      * Toute opération en espèces exige une session de caisse ouverte de l'opérateur (skill §7).
      */
@@ -117,6 +120,7 @@ final class RegleEpargne
             'session_caisse_id' => $session?->id,
             'auteur_id' => auth()->id(),
         ])->save();
+        $this->recus->executer($mouvement, $compte);
 
         return $mouvement;
     }

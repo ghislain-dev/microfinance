@@ -10,6 +10,8 @@ use App\Http\Controllers\Web\CompteEpargneController;
 use App\Http\Controllers\Web\DemandeDecaissementController;
 use App\Http\Controllers\Web\MembreController;
 use App\Http\Controllers\Web\OperationEpargneController;
+use App\Http\Controllers\Web\OrganisationController;
+use App\Http\Controllers\Web\RecuController;
 use App\Http\Controllers\Web\SessionCaisseController;
 use App\Http\Controllers\Web\SeuilValidationController;
 use App\Http\Controllers\Web\TypeCompteEpargneController;
@@ -67,5 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/demandes/{demande}/payer', [OperationEpargneController::class, 'payer'])->whereNumber('demande')->name('demandes.payer');
 
     Route::get('/epargne/seuils', [SeuilValidationController::class, 'index'])->name('epargne.seuils');
+    Route::get('/recus/{recu}', [RecuController::class, 'show'])->whereNumber('recu')->name('recus.show');
+    Route::get('/organisation', [OrganisationController::class, 'show'])->name('organisation.show');
+    Route::post('/organisation/logo', [OrganisationController::class, 'logo'])->name('organisation.logo');
     Route::post('/epargne/seuils', [SeuilValidationController::class, 'store']);
 });

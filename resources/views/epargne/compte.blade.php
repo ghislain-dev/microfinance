@@ -56,7 +56,7 @@
         <div class="card-header">Mouvements</div>
         <div class="table-responsive">
             <table class="table mb-0">
-                <thead><tr><th>Date</th><th>Opération</th><th class="text-end">Montant</th><th class="text-end">Frais</th></tr></thead>
+                <thead><tr><th>Date</th><th>Opération</th><th class="text-end">Montant</th><th class="text-end">Frais</th><th>Reçu</th></tr></thead>
                 <tbody>
                     @forelse ($mouvements as $mouvement)
                         <tr>
@@ -64,9 +64,10 @@
                             <td>{{ $mouvement->libelleType() }}</td>
                             <td class="text-end">{{ $mouvement->montant->formate() }}</td>
                             <td class="text-end">{{ $mouvement->frais->estZero() ? '' : $mouvement->frais->formate() }}</td>
+                            <td>@if ($mouvement->recu)<a href="{{ route('recus.show', $mouvement->recu) }}">{{ $mouvement->recu->numero }}</a>@endif</td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="text-center text-body-secondary py-3">Aucun mouvement.</td></tr>
+                        <tr><td colspan="5" class="text-center text-body-secondary py-3">Aucun mouvement.</td></tr>
                     @endforelse
                 </tbody>
             </table>

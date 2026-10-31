@@ -12,6 +12,7 @@ use App\Support\MultiOrganisation\AppartientAOrganisation;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $type
@@ -38,6 +39,14 @@ class MouvementEpargne extends Model
             'virement_entrant' => 'Virement reçu',
             default => $this->type,
         };
+    }
+
+    /**
+     * @return HasOne<Recu, $this>
+     */
+    public function recu(): HasOne
+    {
+        return $this->hasOne(Recu::class);
     }
 
     /**
