@@ -139,7 +139,7 @@ Règles de dépendance entre modules :
 - [x] `MoteurFinancier::executer()` : transaction, verrous, équilibre, idempotence
 - [x] Extourne avec validation 4 yeux
 - [x] Commande `finance:verifier-soldes` planifiée chaque nuit
-- [ ] Tests : équilibre, idempotence ×10, concurrence 50 retraits (MySQL)
+- [x] Tests : équilibre, idempotence ×10, concurrence 50 retraits (MySQL)
 
 ### Phase 2 — Épargne et caisse (≈ 2 semaines)
 - [ ] Types de comptes paramétrables, dépôt, retrait, virement, reçu PDF
