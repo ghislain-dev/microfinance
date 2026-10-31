@@ -41,6 +41,7 @@ class MouvementEpargne extends Model
             'change_entrant' => 'Change (devise reçue)',
             'interets' => 'Intérêts',
             'ristourne' => 'Ristourne',
+            'tontine_tour' => 'Tour de tontine',
             default => $this->type,
         };
     }
