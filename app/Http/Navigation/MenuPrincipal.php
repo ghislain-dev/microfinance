@@ -24,6 +24,7 @@ final class MenuPrincipal
             [new EntreeMenu('Demandes à valider', 'demandes.index'), Droit::OperationsValiderDecaissement],
             [new EntreeMenu('Taux de change', 'change.index'), [Droit::ChangeSaisirTaux, Droit::EpargneVirer]],
             [new EntreeMenu('Produits d’épargne', 'epargne.types.index'), Droit::EpargneParametrer],
+            [new EntreeMenu('Intérêts et ristournes', 'epargne.remunerations.index'), Droit::EpargneRemuneration],
             [new EntreeMenu('Organisation', 'organisation.show'), Droit::OrganisationModifier],
             [new EntreeMenu('Agences', null), Droit::AgencesVoir],
             [new EntreeMenu('Utilisateurs', null), Droit::UtilisateursVoir],

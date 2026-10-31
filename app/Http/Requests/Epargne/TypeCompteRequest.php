@@ -28,6 +28,7 @@ class TypeCompteRequest extends FormRequest
             'depot_minimum' => ['required', new MontantSaisi(zeroAutorise: true)],
             'frais_retrait' => ['required', new MontantSaisi(zeroAutorise: true)],
             'duree_blocage_mois' => ['nullable', 'integer', 'min:1', 'max:600'],
+            'taux_interet_annuel' => ['nullable', 'string', 'regex:/^\d{1,3}([.,]\d{1,2})?$/'],
             'actif' => ['nullable', 'boolean'],
         ];
     }
@@ -41,6 +42,7 @@ class TypeCompteRequest extends FormRequest
             'code.regex' => 'Code : 2 à 10 lettres majuscules ou chiffres (ex. EPV, DAT).',
             'code.unique' => 'Ce code existe déjà.',
             'devise' => 'Devise : USD ou CDF.',
+            'taux_interet_annuel.regex' => 'Taux d’intérêt annuel en %, deux décimales au plus (ex. 3,25).',
             'duree_blocage_mois.min' => 'Durée de blocage : au moins 1 mois (laisser vide si retraits libres).',
             'required' => 'Ce champ est obligatoire.',
         ];

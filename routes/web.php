@@ -13,6 +13,7 @@ use App\Http\Controllers\Web\MembreController;
 use App\Http\Controllers\Web\OperationEpargneController;
 use App\Http\Controllers\Web\OrganisationController;
 use App\Http\Controllers\Web\RecuController;
+use App\Http\Controllers\Web\RemunerationController;
 use App\Http\Controllers\Web\SessionCaisseController;
 use App\Http\Controllers\Web\SeuilValidationController;
 use App\Http\Controllers\Web\TypeCompteEpargneController;
@@ -75,6 +76,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/epargne/seuils', [SeuilValidationController::class, 'index'])->name('epargne.seuils');
     Route::get('/recus/{recu}', [RecuController::class, 'show'])->whereNumber('recu')->name('recus.show');
+
+    Route::get('/epargne/remunerations', [RemunerationController::class, 'index'])->name('epargne.remunerations.index');
+    Route::post('/epargne/remunerations/interets', [RemunerationController::class, 'interets'])->name('epargne.remunerations.interets');
+    Route::post('/epargne/remunerations/ristournes', [RemunerationController::class, 'ristourne'])->name('epargne.remunerations.ristournes');
+    Route::get('/epargne/remunerations/{lot}', [RemunerationController::class, 'show'])->whereNumber('lot')->name('epargne.remunerations.show');
+    Route::post('/epargne/remunerations/{lot}/valider', [RemunerationController::class, 'valider'])->whereNumber('lot')->name('epargne.remunerations.valider');
+    Route::post('/epargne/remunerations/{lot}/rejeter', [RemunerationController::class, 'rejeter'])->whereNumber('lot')->name('epargne.remunerations.rejeter');
     Route::get('/organisation', [OrganisationController::class, 'show'])->name('organisation.show');
     Route::post('/organisation/logo', [OrganisationController::class, 'logo'])->name('organisation.logo');
     Route::post('/epargne/seuils', [SeuilValidationController::class, 'store']);

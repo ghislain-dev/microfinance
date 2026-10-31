@@ -49,6 +49,13 @@
                        @class(['form-control', 'is-invalid' => $errors->has('duree_blocage_mois')])>
                 @error('duree_blocage_mois') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
+            <div class="col-md-3">
+                <label for="taux_interet_annuel" class="form-label">Intérêt annuel (%)</label>
+                <input id="taux_interet_annuel" name="taux_interet_annuel" inputmode="decimal" placeholder="0"
+                       value="{{ old('taux_interet_annuel', $type ? substr($type->tauxInteretFormate(), 0, -2) : '0') }}"
+                       @class(['form-control', 'is-invalid' => $errors->has('taux_interet_annuel')])>
+                @error('taux_interet_annuel') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
             @if ($type)
                 <div class="col-12 form-check ms-2">
                     <input type="hidden" name="actif" value="0">
