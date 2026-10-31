@@ -39,9 +39,13 @@ enum Role: string
     public function droits(): array
     {
         return match ($this) {
-            self::Admin => Droit::cases(),
-            self::Gerant => [Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::UtilisateursVoir, Droit::AuditVoir],
-            self::Comptable => [Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir],
+            // Pas de validation d'extourne pour l'admin (décision du 2026-10-31).
+            self::Admin => [
+                Droit::TableauDeBordVoir, Droit::OrganisationModifier, Droit::AgencesVoir, Droit::AgencesGerer,
+                Droit::UtilisateursVoir, Droit::UtilisateursGerer, Droit::AuditVoir,
+            ],
+            self::Gerant => [Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::UtilisateursVoir, Droit::AuditVoir, Droit::OperationsExtourner],
+            self::Comptable => [Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner],
             self::Caissier, self::Collecteur, self::AgentCredit, self::Comite => [Droit::TableauDeBordVoir],
             self::Membre => [],
         };

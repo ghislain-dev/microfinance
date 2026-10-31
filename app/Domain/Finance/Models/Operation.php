@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Finance\Models;
 
+use App\Domain\Finance\Policies\OperationPolicy;
 use App\Models\User;
 use App\Support\BaseDeDonnees\EnInsertionSeule;
 use App\Support\Montant\Devise;
 use App\Support\MultiOrganisation\AppartientAOrganisation;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property Devise $devise
  * @property Carbon $date_valeur
  */
+#[UsePolicy(OperationPolicy::class)]
 #[Fillable(['idempotency_key', 'type', 'devise', 'auteur_id', 'valide_par_id', 'extourne_de_id', 'date_valeur', 'motif'])]
 class Operation extends Model
 {

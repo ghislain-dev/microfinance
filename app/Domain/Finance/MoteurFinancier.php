@@ -7,6 +7,7 @@ namespace App\Domain\Finance;
 use App\Domain\Finance\Comptes\Sens;
 use App\Domain\Finance\Events\OperationEnregistree;
 use App\Domain\Finance\Exceptions\CompteIndisponible;
+use App\Domain\Finance\Exceptions\DejaExtournee;
 use App\Domain\Finance\Exceptions\OperationDesequilibree;
 use App\Domain\Finance\Exceptions\PeriodeCloturee;
 use App\Domain\Finance\Exceptions\SoldeInsuffisant;
@@ -24,6 +25,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use InvalidArgumentException;
 
 /**
  * Seul point d'écriture de l'argent (CLAUDE.md §4.2) : une transaction, verrous sur les comptes
@@ -105,6 +108,42 @@ final class MoteurFinancier
             // Même clé envoyée en même temps : l'autre requête a gagné, on renvoie son résultat.
             return $this->parCle($cle) ?? throw $e;
         }
+    }
+
+    /**
+     * Annule une opération par une opération inverse, datée du jour, validée par une seconde personne
+     * (CLAUDE.md §4.3 et §4.7). L'origine n'est jamais modifiée.
+     */
+    public function extourner(Operation $origine, string $motif, User $validateur): Operation
+    {
+        $motif = trim($motif);
+        if ($motif === '' || mb_strlen($motif) > 500) {
+            throw new InvalidArgumentException('Motif d’extourne obligatoire (500 caractères au plus).');
+        }
+
+        // Droits évalués dans l'organisation du validateur ; la Policy exige que l'opération y soit aussi.
+        $equipePrecedente = getPermissionsTeamId();
+        setPermissionsTeamId($validateur->organisation_id);
+        try {
+            Gate::forUser($validateur)->authorize('extourner', $origine);
+        } finally {
+            setPermissionsTeamId($equipePrecedente);
+        }
+
+        if ($origine->extourne()->exists()) {
+            throw new DejaExtournee("L'opération {$origine->id} est déjà extournée.");
+        }
+
+        $lignes = $origine->ecritures()->orderBy('id')->get()
+            ->map(fn (Ecriture $e) => new LigneEcriture($e->compte_id, $e->credit, $e->debit, $e->devise))
+            ->values()->all();
+
+        $extourne = $this->executer("extourne:{$origine->id}", 'extourne', $lignes,
+            motif: $motif, extourneDe: $origine, validateur: $validateur);
+
+        $this->journal->enregistrer('operations.extourne', $origine, apres: ['extourne_id' => $extourne->id, 'motif' => $motif], acteur: $validateur);
+
+        return $extourne;
     }
 
     /**

@@ -16,4 +16,5 @@ enum Droit: string
     case UtilisateursVoir = 'utilisateurs.voir';
     case UtilisateursGerer = 'utilisateurs.gerer';
     case AuditVoir = 'audit.voir';
+    case OperationsExtourner = 'operations.extourner';
 }
