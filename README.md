@@ -21,6 +21,12 @@ Créer une organisation réelle et son premier administrateur :
 php artisan organisation:creer COOPEC-GOMA "Coopec Goma"
 ```
 
+En production, lancer le planificateur chaque minute (contrôle des soldes à 2 h) :
+
+```cron
+* * * * * cd /chemin/du/projet && php artisan schedule:run >> /dev/null 2>&1
+```
+
 ## Vérifications (obligatoires avant chaque commit)
 
 ```bash
