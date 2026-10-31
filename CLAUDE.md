@@ -136,7 +136,7 @@ Règles de dépendance entre modules :
 - [ ] Membres : CRUD, numéro unique, détection de doublons (téléphone, pièce), statuts
 - [x] Value object `Montant` (ou `brick/money`), plan de comptes, table `comptes`
 - [x] `operations` + `ecritures` (insertion seule, triggers MySQL anti-UPDATE/DELETE)
-- [ ] `MoteurFinancier::executer()` : transaction, verrous, équilibre, idempotence
+- [x] `MoteurFinancier::executer()` : transaction, verrous, équilibre, idempotence
 - [ ] Extourne avec validation 4 yeux
 - [ ] Commande `finance:verifier-soldes` planifiée chaque nuit
 - [ ] Tests : équilibre, idempotence ×10, concurrence 50 retraits (MySQL)
