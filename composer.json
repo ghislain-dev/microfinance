@@ -12,7 +12,7 @@
         "php": "^8.3",
         "brick/money": "^0.15.2",
         "laravel/framework": "^13.17",
-        "laravel/sanctum": "^4.3",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "predis/predis": "^3.7",
         "spatie/laravel-permission": "^8.3"
