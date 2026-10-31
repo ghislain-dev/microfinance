@@ -20,6 +20,7 @@ enum NatureCompte: string
     case CreancePersonnel = 'creance_personnel'; // manquants de caisse imputés au caissier (2026-10-31)
     case PositionChange = 'position_change';     // contrepartie des conversions USD/CDF, une par devise
     case Produit = 'produit';
+    case FondsPropres = 'fonds_propres'; // ex. excédents à répartir (ristournes)
     case Charge = 'charge';
 
     /**
@@ -30,16 +31,17 @@ enum NatureCompte: string
     {
         return match ($this) {
             self::Caisse, self::Pret, self::CreanceMembre, self::CreancePersonnel, self::PositionChange, self::Charge => Sens::Debit,
-            self::Epargne, self::PartsSociales, self::CycleTontine, self::FondsSocial, self::Produit => Sens::Credit,
+            self::Epargne, self::PartsSociales, self::CycleTontine, self::FondsSocial, self::Produit, self::FondsPropres => Sens::Credit,
         };
     }
 
     /**
-     * Caisse, épargne et parts ne passent jamais sous zéro (décision du 2026-10-31).
+     * Caisse, épargne et parts ne passent jamais sous zéro (décision du 2026-10-31) ; les fonds propres non plus
+     * (on ne distribue pas d'excédents qui n'existent pas).
      */
     public function peutEtreNegatif(): bool
     {
-        return ! in_array($this, [self::Caisse, self::Epargne, self::PartsSociales], true);
+        return ! in_array($this, [self::Caisse, self::Epargne, self::PartsSociales, self::FondsPropres], true);
     }
 
     public function libelle(): string
@@ -55,6 +57,7 @@ enum NatureCompte: string
             self::CreancePersonnel => 'Créance sur le personnel',
             self::PositionChange => 'Position de change',
             self::Produit => 'Produit',
+            self::FondsPropres => 'Fonds propres',
             self::Charge => 'Charge',
         };
     }

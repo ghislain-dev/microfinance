@@ -51,11 +51,11 @@ enum Role: string
                 Droit::OperationsExtourner, Droit::MembresVoir, Droit::MembresGerer,
                 Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart,
                 Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::EpargneVirer, Droit::OperationsValiderDecaissement,
-                Droit::ChangeSaisirTaux,
+                Droit::ChangeSaisirTaux, Droit::EpargneRemuneration,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
-                Droit::OperationsValiderDecaissement, Droit::ChangeSaisirTaux,
+                Droit::OperationsValiderDecaissement, Droit::ChangeSaisirTaux, Droit::EpargneRemuneration,
             ],
             self::Caissier => [
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,

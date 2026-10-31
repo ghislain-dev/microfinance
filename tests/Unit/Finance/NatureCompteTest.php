@@ -19,10 +19,11 @@ it('donne le sens normal de chaque nature', function (NatureCompte $nature, Sens
     [NatureCompte::CycleTontine, Sens::Credit],
     [NatureCompte::FondsSocial, Sens::Credit],
     [NatureCompte::Produit, Sens::Credit],
+    [NatureCompte::FondsPropres, Sens::Credit],
 ]);
 
-it('interdit le solde négatif pour la caisse, l’épargne et les parts (décision du 2026-10-31)', function () {
+it('interdit le solde négatif pour la caisse, l’épargne, les parts et les fonds propres', function () {
     $jamaisNegatifs = array_values(array_filter(NatureCompte::cases(), fn (NatureCompte $n) => ! $n->peutEtreNegatif()));
 
-    expect($jamaisNegatifs)->toBe([NatureCompte::Caisse, NatureCompte::Epargne, NatureCompte::PartsSociales]);
+    expect($jamaisNegatifs)->toBe([NatureCompte::Caisse, NatureCompte::Epargne, NatureCompte::PartsSociales, NatureCompte::FondsPropres]);
 });

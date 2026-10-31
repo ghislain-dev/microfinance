@@ -39,6 +39,8 @@ class MouvementEpargne extends Model
             'virement_entrant' => 'Virement reçu',
             'change_sortant' => 'Change (devise cédée)',
             'change_entrant' => 'Change (devise reçue)',
+            'interets' => 'Intérêts',
+            'ristourne' => 'Ristourne',
             default => $this->type,
         };
     }

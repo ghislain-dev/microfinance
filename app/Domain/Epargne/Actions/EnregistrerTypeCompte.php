@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
+use InvalidArgumentException;
 
 /**
  * Création et modification des types de comptes d'épargne. Le code et la devise ne changent jamais.
@@ -44,6 +45,23 @@ final class EnregistrerTypeCompte
     }
 
     /**
+     * « 3,25 » (%) → 325 points de base ; deux décimales au plus.
+     */
+    public static function pointsDeBase(string $saisie): int
+    {
+        $texte = str_replace([' ', ','], ['', '.'], trim($saisie));
+        if ($texte === '') {
+            return 0;
+        }
+        if (preg_match('/^\d{1,3}(\.\d{1,2})?$/', $texte) !== 1) {
+            throw new InvalidArgumentException("Taux d'intérêt invalide : « {$saisie} » (ex. 3,25).");
+        }
+        [$unites, $decimales] = array_pad(explode('.', $texte), 2, '0');
+
+        return (int) $unites * 100 + (int) str_pad($decimales, 2, '0');
+    }
+
+    /**
      * @param  array<string, mixed>  $donnees
      * @return array<string, mixed>
      */
@@ -57,6 +75,9 @@ final class EnregistrerTypeCompte
             'depot_minimum' => Montant::depuisSaisie((string) $donnees['depot_minimum'], $devise),
             'frais_retrait' => Montant::depuisSaisie((string) $donnees['frais_retrait'], $devise),
             'duree_blocage_mois' => $duree === null || $duree === '' ? null : (int) $duree,
+            // Absent du formulaire : le taux en place est conservé.
+            ...(array_key_exists('taux_interet_annuel', $donnees)
+                ? ['taux_interet_pb' => self::pointsDeBase((string) $donnees['taux_interet_annuel'])] : []),
         ];
     }
 }

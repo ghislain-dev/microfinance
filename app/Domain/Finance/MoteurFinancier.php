@@ -162,6 +162,36 @@ final class MoteurFinancier
         return new Montant($compte->nature->sens() === Sens::Debit ? $debits - $credits : $credits - $debits, $compte->devise);
     }
 
+    /**
+     * Soldes réels à une date de valeur (incluse), en une requête : base des intérêts et ristournes.
+     *
+     * @param  iterable<Compte>  $comptes
+     * @return array<int, Montant> compte_id => solde dans le sens normal de la nature
+     */
+    public function soldesAu(iterable $comptes, CarbonInterface $date): array
+    {
+        $parId = collect($comptes)->keyBy('id');
+        if ($parId->isEmpty()) {
+            return [];
+        }
+
+        $totaux = Ecriture::query()->withoutGlobalScopes()
+            ->join('operations', 'operations.id', '=', 'ecritures.operation_id')
+            ->whereIn('ecritures.compte_id', $parId->keys()->all())
+            ->whereDate('operations.date_valeur', '<=', $date->toDateString())
+            ->groupBy('ecritures.compte_id')
+            ->selectRaw('ecritures.compte_id AS compte_id, SUM(ecritures.debit) AS debits, SUM(ecritures.credit) AS credits')
+            ->toBase()->get()->keyBy('compte_id');
+
+        return $parId->map(function (Compte $compte) use ($totaux) {
+            $ligne = $totaux->get($compte->id);
+            $debits = (int) ($ligne->debits ?? 0);
+            $credits = (int) ($ligne->credits ?? 0);
+
+            return new Montant($compte->nature->sens() === Sens::Debit ? $debits - $credits : $credits - $debits, $compte->devise);
+        })->all();
+    }
+
     private function parCle(string $cle): ?Operation
     {
         return Operation::query()->where('idempotency_key', $cle)->first();

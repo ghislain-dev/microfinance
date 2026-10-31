@@ -23,13 +23,19 @@ use Illuminate\Database\Eloquent\Model;
  * @property Montant $depot_minimum
  * @property Montant $frais_retrait
  * @property int|null $duree_blocage_mois
+ * @property int $taux_interet_pb taux annuel en points de base (325 = 3,25 %)
  */
-#[Fillable(['code', 'libelle', 'devise', 'solde_minimum', 'depot_minimum', 'frais_retrait', 'duree_blocage_mois', 'actif'])]
+#[Fillable(['code', 'libelle', 'devise', 'solde_minimum', 'depot_minimum', 'frais_retrait', 'duree_blocage_mois', 'taux_interet_pb', 'actif'])]
 #[Table('types_comptes_epargne')]
 #[UsePolicy(TypeCompteEpargnePolicy::class)]
 class TypeCompteEpargne extends Model
 {
     use AppartientAOrganisation, EstAudite;
+
+    public function tauxInteretFormate(): string
+    {
+        return intdiv($this->taux_interet_pb, 100).','.str_pad((string) ($this->taux_interet_pb % 100), 2, '0', STR_PAD_LEFT).' %';
+    }
 
     /**
      * @return array<string, string>
@@ -42,6 +48,7 @@ class TypeCompteEpargne extends Model
             'depot_minimum' => MontantCast::class.':devise',
             'frais_retrait' => MontantCast::class.':devise',
             'duree_blocage_mois' => 'integer',
+            'taux_interet_pb' => 'integer',
             'actif' => 'boolean',
         ];
     }

@@ -34,6 +34,7 @@ const MATRICE_PHASE_0 = [
     'epargne.virer' => ['gerant', 'caissier'],
     'operations.valider_decaissement' => ['gerant', 'comptable'],
     'change.saisir_taux' => ['gerant', 'comptable'],
+    'epargne.remuneration' => ['gerant', 'comptable'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];
