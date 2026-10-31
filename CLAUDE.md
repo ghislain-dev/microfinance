@@ -143,7 +143,7 @@ Règles de dépendance entre modules :
 
 ### Phase 2 — Épargne et caisse (≈ 2 semaines)
 - [ ] Types de comptes paramétrables, dépôt, retrait, virement, reçu PDF
-- [ ] Caisses, ouverture/clôture de session, billetage, écart bloquant
+- [x] Caisses, ouverture/clôture de session, billetage, écart bloquant
 - [ ] Taux de change du jour, opérations USD/CDF
 - [ ] Intérêts / ristournes sur épargne
 

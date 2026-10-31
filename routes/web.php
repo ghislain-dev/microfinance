@@ -5,7 +5,9 @@ declare(strict_types=1);
 use App\Domain\Organisation\Acces\Droit;
 use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
+use App\Http\Controllers\Web\CaisseController;
 use App\Http\Controllers\Web\MembreController;
+use App\Http\Controllers\Web\SessionCaisseController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -32,4 +34,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/membres/{membre}/modifier', [MembreController::class, 'edit'])->whereNumber('membre')->name('membres.edit');
     Route::put('/membres/{membre}', [MembreController::class, 'update'])->whereNumber('membre')->name('membres.update');
     Route::patch('/membres/{membre}/statut', [MembreController::class, 'changerStatut'])->whereNumber('membre')->name('membres.statut');
+
+    Route::get('/caisses', [CaisseController::class, 'index'])->name('caisses.index');
+    Route::get('/caisses/creer', [CaisseController::class, 'create'])->name('caisses.create');
+    Route::post('/caisses', [CaisseController::class, 'store'])->name('caisses.store');
+    Route::get('/caisses/{caisse}/ouvrir', [SessionCaisseController::class, 'create'])->whereNumber('caisse')->name('caisses.ouvrir');
+    Route::post('/caisses/{caisse}/ouvrir', [SessionCaisseController::class, 'store'])->whereNumber('caisse');
+    Route::get('/sessions-caisse/{sessionCaisse}', [SessionCaisseController::class, 'show'])->whereNumber('sessionCaisse')->name('sessions-caisse.show');
+    Route::post('/sessions-caisse/{sessionCaisse}/cloturer', [SessionCaisseController::class, 'cloturer'])->whereNumber('sessionCaisse')->name('sessions-caisse.cloturer');
+    Route::post('/sessions-caisse/{sessionCaisse}/valider', [SessionCaisseController::class, 'valider'])->whereNumber('sessionCaisse')->name('sessions-caisse.valider');
 });

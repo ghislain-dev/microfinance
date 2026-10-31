@@ -11,6 +11,16 @@ use App\Models\User;
 
 class CaissePolicy
 {
+    public function viewAny(User $acteur): bool
+    {
+        return $acteur->canAny([Droit::CaissesGerer->value, Droit::CaisseOperer->value, Droit::CaisseValiderEcart->value]);
+    }
+
+    public function view(User $acteur, Caisse $caisse): bool
+    {
+        return $caisse->organisation_id === $acteur->organisation_id && $this->viewAny($acteur);
+    }
+
     public function create(User $acteur, ?Agence $agence = null): bool
     {
         return ($agence === null || $agence->organisation_id === $acteur->organisation_id)

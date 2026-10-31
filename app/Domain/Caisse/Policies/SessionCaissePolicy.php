@@ -10,6 +10,13 @@ use App\Models\User;
 
 class SessionCaissePolicy
 {
+    public function view(User $acteur, SessionCaisse $session): bool
+    {
+        return $session->organisation_id === $acteur->organisation_id
+            && ($session->caissier_id === $acteur->id
+                || $acteur->canAny([Droit::CaissesGerer->value, Droit::CaisseValiderEcart->value]));
+    }
+
     public function cloturer(User $acteur, SessionCaisse $session): bool
     {
         return $session->caissier_id === $acteur->id && $acteur->can(Droit::CaisseOperer->value);

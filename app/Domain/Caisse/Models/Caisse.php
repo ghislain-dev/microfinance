@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['code', 'libelle', 'actif'])]
 #[UsePolicy(CaissePolicy::class)]
@@ -47,14 +48,17 @@ class Caisse extends Model
         return $this->hasMany(SessionCaisse::class);
     }
 
+    /**
+     * @return HasOne<SessionCaisse, $this>
+     */
+    public function sessionEnCours(): HasOne
+    {
+        return $this->hasOne(SessionCaisse::class)->whereNotNull('active_flag');
+    }
+
     public function compte(Devise $devise): Compte
     {
         return $this->comptes()->wherePivot('devise', $devise->value)->firstOrFail();
-    }
-
-    public function sessionActive(): ?SessionCaisse
-    {
-        return $this->sessions()->whereNotNull('active_flag')->first();
     }
 
     /**
