@@ -15,6 +15,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
@@ -65,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
         Notification::extend('sms', fn (Application $app) => new CanalSms($app->make(EnvoyeurSms::class)));
 
         $this->limiterLesRequetes();
+        Paginator::useBootstrapFive();
 
         // Pages connectées : utilisateur (organisation et agences chargées d'avance) et menu, pour toutes
         // les vues (la page est calculée avant sa mise en page).

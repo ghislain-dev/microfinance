@@ -19,6 +19,7 @@ final class MenuPrincipal
     {
         $entrees = [
             [new EntreeMenu('Tableau de bord', 'tableau-de-bord'), Droit::TableauDeBordVoir],
+            [new EntreeMenu('Membres', 'membres.index'), Droit::MembresVoir],
             [new EntreeMenu('Agences', null), Droit::AgencesVoir],
             [new EntreeMenu('Utilisateurs', null), Droit::UtilisateursVoir],
             [new EntreeMenu('Journal d’audit', null), Droit::AuditVoir],

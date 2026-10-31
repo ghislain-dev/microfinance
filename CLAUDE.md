@@ -133,7 +133,7 @@ Règles de dépendance entre modules :
 - [x] Mise en page Bootstrap : layout, menu par rôle, tableau de bord vide
 
 ### Phase 1 — Membres et moteur financier (≈ 3 semaines)
-- [ ] Membres : CRUD, numéro unique, détection de doublons (téléphone, pièce), statuts
+- [x] Membres : CRUD, numéro unique, détection de doublons (téléphone, pièce), statuts
 - [x] Value object `Montant` (ou `brick/money`), plan de comptes, table `comptes`
 - [x] `operations` + `ecritures` (insertion seule, triggers MySQL anti-UPDATE/DELETE)
 - [x] `MoteurFinancier::executer()` : transaction, verrous, équilibre, idempotence

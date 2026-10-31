@@ -9,7 +9,7 @@ use Tests\Support\Acteurs;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
-const MENU = ['Tableau de bord', 'Agences', 'Utilisateurs', 'Journal d’audit'];
+const MENU = ['Tableau de bord', 'Membres', 'Agences', 'Utilisateurs', 'Journal d’audit'];
 
 it('affiche le menu selon le rôle', function (string $role, array $visibles) {
     actingAs(Acteurs::avecRole($role));
@@ -24,12 +24,12 @@ it('affiche le menu selon le rôle', function (string $role, array $visibles) {
     }
 })->with([
     'admin' => ['admin', MENU],
-    'gérant' => ['gerant', ['Tableau de bord', 'Agences', 'Utilisateurs', 'Journal d’audit']],
-    'comptable' => ['comptable', ['Tableau de bord', 'Agences', 'Journal d’audit']],
-    'caissier' => ['caissier', ['Tableau de bord']],
-    'collecteur' => ['collecteur', ['Tableau de bord']],
-    'agent de crédit' => ['agent_credit', ['Tableau de bord']],
-    'comité' => ['comite', ['Tableau de bord']],
+    'gérant' => ['gerant', ['Tableau de bord', 'Membres', 'Agences', 'Utilisateurs', 'Journal d’audit']],
+    'comptable' => ['comptable', ['Tableau de bord', 'Membres', 'Agences', 'Journal d’audit']],
+    'caissier' => ['caissier', ['Tableau de bord', 'Membres']],
+    'collecteur' => ['collecteur', ['Tableau de bord', 'Membres']],
+    'agent de crédit' => ['agent_credit', ['Tableau de bord', 'Membres']],
+    'comité' => ['comite', ['Tableau de bord', 'Membres']],
 ]);
 
 it('affiche l’utilisateur, son organisation, ses rôles et ses agences', function () {

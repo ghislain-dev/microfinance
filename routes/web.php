@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Organisation\Acces\Droit;
 use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
+use App\Http\Controllers\Web\MembreController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -23,4 +24,12 @@ Route::middleware('auth')->group(function () {
     Route::redirect('/', '/tableau-de-bord');
     Route::view('/tableau-de-bord', 'tableau-de-bord')
         ->middleware('can:'.Droit::TableauDeBordVoir->value)->name('tableau-de-bord');
+
+    Route::get('/membres', [MembreController::class, 'index'])->name('membres.index');
+    Route::get('/membres/creer', [MembreController::class, 'create'])->name('membres.create');
+    Route::post('/membres', [MembreController::class, 'store'])->name('membres.store');
+    Route::get('/membres/{membre}', [MembreController::class, 'show'])->whereNumber('membre')->name('membres.show');
+    Route::get('/membres/{membre}/modifier', [MembreController::class, 'edit'])->whereNumber('membre')->name('membres.edit');
+    Route::put('/membres/{membre}', [MembreController::class, 'update'])->whereNumber('membre')->name('membres.update');
+    Route::patch('/membres/{membre}/statut', [MembreController::class, 'changerStatut'])->whereNumber('membre')->name('membres.statut');
 });

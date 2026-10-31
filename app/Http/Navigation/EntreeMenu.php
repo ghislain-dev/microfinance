@@ -16,6 +16,6 @@ final readonly class EntreeMenu
 
     public function estActive(): bool
     {
-        return $this->route !== null && request()->routeIs($this->route);
+        return $this->route !== null && request()->routeIs(explode('.', $this->route)[0].'*');
     }
 }

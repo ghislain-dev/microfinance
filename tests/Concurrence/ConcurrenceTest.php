@@ -8,12 +8,14 @@ use App\Domain\Finance\Models\Compte;
 use App\Domain\Finance\Models\Ecriture;
 use App\Domain\Finance\Models\Operation;
 use App\Domain\Finance\MoteurFinancier;
+use App\Domain\Organisation\Models\Agence;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
 use Illuminate\Process\Pool;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
+use Tests\Support\Acteurs;
 use Tests\Support\DeuxOrganisations;
 use Tests\Support\GrandLivre;
 
@@ -84,8 +86,8 @@ it('ne crée qu’une opération pour 50 envois simultanés de la même clé', f
 })->group('mysql');
 
 it('attribue des numéros de membre sans trou ni doublon avec 20 inscriptions simultanées', function () {
-    $caissier = Tests\Support\Acteurs::avecRole('caissier');
-    $agence = App\Domain\Organisation\Models\Agence::factory()->for($caissier->organisation)->create(['code' => 'BUK']);
+    $caissier = Acteurs::avecRole('caissier');
+    $agence = Agence::factory()->for($caissier->organisation)->create(['code' => 'BUK']);
     Auth::forgetUser();
     $depart = (string) (microtime(true) + 3);
     $script = base_path('tests/Concurrence/scripts/inscription.php');
