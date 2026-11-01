@@ -66,6 +66,11 @@ final class DecaisserPret
                 NatureCompte::Pret, $pret->devise, $membre->agence);
             $comptePenalites = $this->ouvrirCompte->executer("{$pret->numero}-PEN", "Pénalités dues — prêt {$pret->numero}",
                 NatureCompte::CreanceMembre, $pret->devise, $membre->agence);
+            // Produits ouverts ici, avec l'utilisateur connecté : la commande de nuit n'en ouvre aucun.
+            foreach (['INTERETS' => 'Intérêts sur prêts', 'PENALITES' => 'Pénalités sur prêts'] as $code => $libelle) {
+                $this->ouvrirCompte->obtenir("PRODUIT-{$code}-PRET-{$pret->devise->value}", "{$libelle} ({$pret->devise->value})",
+                    NatureCompte::Produit, $pret->devise);
+            }
 
             $operation = $this->moteur->executer("decaissement-pret:{$pret->id}", 'decaissement_credit', [
                 LigneEcriture::debit($comptePret, $pret->montant),

@@ -72,6 +72,19 @@ final readonly class Credit
         ]);
     }
 
+    /**
+     * Autre membre épargnant (500 USD) de la même organisation, avec le même produit et les mêmes acteurs.
+     */
+    public static function autreEmprunteur(self $c): self
+    {
+        $membre = Epargnant::membre($c->g);
+        $compte = app(OuvrirCompteEpargne::class)->executer($c->g->gerant, $membre, $c->compte->type);
+        auth()->setUser($c->g->caissier);
+        app(Deposer::class)->executer($c->g->caissier, $compte, self::usd('500'), (string) Str::uuid());
+
+        return new self($c->g, $membre, $compte, $c->produit, $c->agent, $c->comite, $c->comptable);
+    }
+
     public static function usd(string $montant): Montant
     {
         return Montant::depuisSaisie($montant, Devise::USD);

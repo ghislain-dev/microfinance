@@ -132,6 +132,7 @@ return new class extends Migration
             $table->bigInteger('interet_paye')->default(0);
             $table->bigInteger('penalite')->default(0);
             $table->bigInteger('penalite_payee')->default(0);
+            $table->date('penalite_constatee_au')->nullable();  // dernier jour de pénalité constaté
             $table->timestamp('payee_le')->nullable();
             $table->timestamps();
 
@@ -141,12 +142,37 @@ return new class extends Migration
             $table->foreign(['pret_id', 'organisation_id'], 'echeances_pret_fk')->references(['id', 'organisation_id'])->on('prets');
         });
 
+        // Remboursements et leur répartition, chacun lié à l'opération du moteur.
+        Schema::create('remboursements_pret', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('organisation_id');
+            $table->unsignedBigInteger('pret_id');
+            $table->unsignedBigInteger('operation_id')->unique();
+            $table->string('mode', 20);                         // especes | epargne
+            $table->char('devise', 3);
+            $table->bigInteger('montant');
+            $table->bigInteger('penalites');
+            $table->bigInteger('interets');
+            $table->bigInteger('capital');
+            $table->unsignedBigInteger('session_caisse_id')->nullable();
+            $table->unsignedBigInteger('auteur_id')->nullable();
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->index(['pret_id', 'id']);
+            $table->foreign(['pret_id', 'organisation_id'], 'remboursements_pret_fk')->references(['id', 'organisation_id'])->on('prets');
+            $table->foreign(['operation_id', 'organisation_id'], 'remboursements_operation_fk')->references(['id', 'organisation_id'])->on('operations');
+            $table->foreign(['session_caisse_id', 'organisation_id'], 'remboursements_session_fk')->references(['id', 'organisation_id'])->on('sessions_caisse');
+        });
+
         InsertionSeule::proteger('garanties_pret');
+        InsertionSeule::proteger('remboursements_pret');
     }
 
     public function down(): void
     {
+        InsertionSeule::retirer('remboursements_pret');
         InsertionSeule::retirer('garanties_pret');
+        Schema::dropIfExists('remboursements_pret');
         Schema::dropIfExists('echeances_pret');
         Schema::dropIfExists('garanties_pret');
         Schema::dropIfExists('prets');

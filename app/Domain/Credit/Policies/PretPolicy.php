@@ -61,4 +61,12 @@ class PretPolicy
             && $pret->saisi_par_id !== $acteur->id
             && $acteur->can(Droit::CreditDecaisser->value);
     }
+
+    /**
+     * Remboursement : caissier ou gérant (tenue de caisse), en espèces ou depuis l'épargne.
+     */
+    public function rembourser(User $acteur, Pret $pret): bool
+    {
+        return $pret->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CaisseOperer->value);
+    }
 }

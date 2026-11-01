@@ -9,3 +9,6 @@ Schedule::command('finance:verifier-soldes')->dailyAt('02:00')->withoutOverlappi
 
 // Intérêts d'épargne du mois écoulé, le 1er à 3 h : lots à valider avant tout versement.
 Schedule::command('epargne:calculer-interets')->monthlyOn(1, '03:00')->withoutOverlapping()->onOneServer();
+
+// Pénalités de retard des prêts, chaque nuit à 1 h (avant le contrôle des soldes).
+Schedule::command('credit:constater-penalites')->dailyAt('01:00')->withoutOverlapping()->onOneServer();

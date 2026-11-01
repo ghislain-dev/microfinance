@@ -3,6 +3,10 @@
 declare(strict_types=1);
 
 use App\Domain\Caisse\Models\SessionCaisse;
+use App\Domain\Credit\Actions\DecaisserPret;
+use App\Domain\Credit\Models\Pret;
+use App\Domain\Credit\Models\Remboursement;
+use App\Domain\Credit\StatutPret;
 use App\Domain\Finance\Comptes\NatureCompte;
 use App\Domain\Finance\LigneEcriture;
 use App\Domain\Finance\Models\Compte;
@@ -17,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Tests\Support\Acteurs;
+use Tests\Support\Credit;
 use Tests\Support\DeuxOrganisations;
 use Tests\Support\GrandLivre;
 use Tests\Support\Guichet;
@@ -125,4 +130,26 @@ it('n’ouvre qu’une session pour 10 ouvertures simultanées de la même caiss
 
     expect(array_count_values($sorties))->toEqual(['OK' => 1, 'REFUS' => 9])
         ->and(SessionCaisse::withoutGlobalScopes()->count())->toBe(1);
+})->group('mysql');
+
+it('ne rembourse jamais un prêt au-delà de ce qu’il doit avec 10 remboursements complets simultanés', function () {
+    $c = Credit::preparer();
+    $pret = $c->approuve('1000', 10);
+    app(DecaisserPret::class)->executer($c->comptable, $pret);
+    Auth::forgetUser();
+    $depart = (string) (microtime(true) + 3);
+    $script = base_path('tests/Concurrence/scripts/remboursement.php');
+
+    // 1 000 de capital + 165 d'intérêts prévus : chaque processus tente de tout payer.
+    $sorties = Process::pool(function (Pool $pool) use ($depart, $script, $c, $pret) {
+        foreach (range(1, 10) as $i) {
+            $pool->path(base_path())->timeout(120)
+                ->command([PHP_BINARY, $script, $depart, (string) $c->g->caissier->id, (string) $pret->id, '1165', "remb-{$i}"]);
+        }
+    })->start()->wait()->collect()->map(fn ($r) => trim($r->output()).trim($r->errorOutput()))->all();
+
+    expect(array_count_values($sorties))->toEqual(['OK' => 1, 'REFUS' => 9])
+        ->and(Remboursement::withoutGlobalScopes()->count())->toBe(1)
+        ->and(Pret::withoutGlobalScopes()->findOrFail($pret->id)->statut)->toBe(StatutPret::Solde);
+    artisan('finance:verifier-soldes')->assertSuccessful();
 })->group('mysql');
