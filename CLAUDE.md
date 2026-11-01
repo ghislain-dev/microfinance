@@ -148,10 +148,10 @@ Règles de dépendance entre modules :
 - [x] Intérêts / ristournes sur épargne
 
 ### Phase 3 — Tontines (≈ 2 semaines)
-- [ ] Groupes, cycles, paramètres (montant, périodicité, mode d'attribution des tours)
-- [ ] Séances : feuille de présence + cotisations en une seule saisie
-- [ ] Tours (tirage, ordre fixé, enchère), pénalités automatiques, fonds social
-- [ ] Partage de fin de cycle calculé + validation du comité
+- [x] Groupes, cycles, paramètres (montant, périodicité, mode d’attribution des tours)
+- [x] Séances : feuille de présence + cotisations en une seule saisie
+- [x] Tours (tirage, ordre fixé, enchère), pénalités automatiques, fonds social
+- [x] Partage de fin de cycle calculé + validation du comité
 
 ### Phase 4 — Crédit (≈ 2 semaines)
 - [ ] Demande, analyse, approbation multi-niveaux selon le montant, décaissement

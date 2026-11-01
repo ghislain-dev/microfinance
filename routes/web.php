@@ -8,14 +8,17 @@ use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
 use App\Http\Controllers\Web\ChangeController;
 use App\Http\Controllers\Web\CompteEpargneController;
+use App\Http\Controllers\Web\CycleController;
 use App\Http\Controllers\Web\DemandeDecaissementController;
 use App\Http\Controllers\Web\MembreController;
 use App\Http\Controllers\Web\OperationEpargneController;
 use App\Http\Controllers\Web\OrganisationController;
 use App\Http\Controllers\Web\RecuController;
 use App\Http\Controllers\Web\RemunerationController;
+use App\Http\Controllers\Web\SeanceController;
 use App\Http\Controllers\Web\SessionCaisseController;
 use App\Http\Controllers\Web\SeuilValidationController;
+use App\Http\Controllers\Web\TontineController;
 use App\Http\Controllers\Web\TypeCompteEpargneController;
 use Illuminate\Support\Facades\Route;
 
@@ -84,6 +87,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/epargne/remunerations/{lot}/valider', [RemunerationController::class, 'valider'])->whereNumber('lot')->name('epargne.remunerations.valider');
     Route::post('/epargne/remunerations/{lot}/rejeter', [RemunerationController::class, 'rejeter'])->whereNumber('lot')->name('epargne.remunerations.rejeter');
     Route::get('/organisation', [OrganisationController::class, 'show'])->name('organisation.show');
+
+    Route::get('/tontines', [TontineController::class, 'index'])->name('tontines.index');
+    Route::post('/tontines', [TontineController::class, 'store'])->name('tontines.store');
+    Route::get('/tontines/{groupe}', [TontineController::class, 'show'])->whereNumber('groupe')->name('tontines.show');
+    Route::post('/tontines/{groupe}/membres', [TontineController::class, 'inscrire'])->whereNumber('groupe')->name('tontines.inscrire');
+    Route::post('/tontines/{groupe}/cycles', [TontineController::class, 'creerCycle'])->whereNumber('groupe')->name('tontines.cycles.store');
+    Route::get('/cycles/{cycle}', [CycleController::class, 'show'])->whereNumber('cycle')->name('cycles.show');
+    Route::post('/cycles/{cycle}/demarrer', [CycleController::class, 'demarrer'])->whereNumber('cycle')->name('cycles.demarrer');
+    Route::post('/cycles/{cycle}/aides', [CycleController::class, 'demanderAide'])->whereNumber('cycle')->name('cycles.aides');
+    Route::post('/cycles/{cycle}/partage', [CycleController::class, 'calculerPartage'])->whereNumber('cycle')->name('cycles.partage');
+    Route::post('/aides/{aide}/{decision}', [CycleController::class, 'deciderAide'])->whereNumber('aide')->whereIn('decision', ['valider', 'rejeter'])->name('aides.decider');
+    Route::post('/partages/{partage}/{decision}', [CycleController::class, 'deciderPartage'])->whereNumber('partage')->whereIn('decision', ['valider', 'rejeter'])->name('partages.decider');
+    Route::get('/seances/{seance}', [SeanceController::class, 'show'])->whereNumber('seance')->name('seances.show');
+    Route::post('/seances/{seance}', [SeanceController::class, 'store'])->whereNumber('seance');
     Route::post('/organisation/logo', [OrganisationController::class, 'logo'])->name('organisation.logo');
     Route::post('/epargne/seuils', [SeuilValidationController::class, 'store']);
 });

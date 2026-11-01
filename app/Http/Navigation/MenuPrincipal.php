@@ -20,6 +20,7 @@ final class MenuPrincipal
         $entrees = [
             [new EntreeMenu('Tableau de bord', 'tableau-de-bord'), Droit::TableauDeBordVoir],
             [new EntreeMenu('Membres', 'membres.index'), Droit::MembresVoir],
+            [new EntreeMenu('Tontines', 'tontines.index'), Droit::MembresVoir],
             [new EntreeMenu('Caisses', 'caisses.index'), [Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart]],
             [new EntreeMenu('Demandes à valider', 'demandes.index'), Droit::OperationsValiderDecaissement],
             [new EntreeMenu('Taux de change', 'change.index'), [Droit::ChangeSaisirTaux, Droit::EpargneVirer]],
