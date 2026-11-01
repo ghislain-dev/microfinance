@@ -38,6 +38,12 @@ const MATRICE_PHASE_0 = [
     // Phase 3 (2026-10-31) : tontines.
     'tontines.gerer' => ['admin', 'gerant'],
     'tontines.valider' => ['comite'],
+
+    'credit.parametrer' => ['admin', 'gerant'],
+    'credit.saisir' => ['gerant', 'agent_credit'],
+    'credit.approuver_comite' => ['comite'],
+    'credit.approuver_gerant' => ['gerant'],
+    'credit.decaisser' => ['gerant', 'comptable'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

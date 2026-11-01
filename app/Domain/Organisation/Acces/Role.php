@@ -44,7 +44,7 @@ enum Role: string
                 Droit::TableauDeBordVoir, Droit::OrganisationModifier, Droit::AgencesVoir, Droit::AgencesGerer,
                 Droit::UtilisateursVoir, Droit::UtilisateursGerer, Droit::AuditVoir,
                 Droit::MembresVoir, Droit::MembresGerer, Droit::CaissesGerer,
-                Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::TontinesGerer,
+                Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::TontinesGerer, Droit::CreditParametrer,
             ],
             self::Gerant => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::UtilisateursVoir, Droit::AuditVoir,
@@ -52,17 +52,19 @@ enum Role: string
                 Droit::CaissesGerer, Droit::CaisseOperer, Droit::CaisseValiderEcart,
                 Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::EpargneVirer, Droit::OperationsValiderDecaissement,
                 Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::TontinesGerer,
+                Droit::CreditParametrer, Droit::CreditSaisir, Droit::CreditApprouverGerant, Droit::CreditDecaisser,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
-                Droit::OperationsValiderDecaissement, Droit::ChangeSaisirTaux, Droit::EpargneRemuneration,
+                Droit::OperationsValiderDecaissement, Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::CreditDecaisser,
             ],
             self::Caissier => [
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,
                 Droit::EpargneVirer,
             ],
-            self::Collecteur, self::AgentCredit => [Droit::TableauDeBordVoir, Droit::MembresVoir],
-            self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::TontinesValider],
+            self::Collecteur => [Droit::TableauDeBordVoir, Droit::MembresVoir],
+            self::AgentCredit => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::CreditSaisir],
+            self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::TontinesValider, Droit::CreditApprouverComite],
             self::Membre => [],
         };
     }

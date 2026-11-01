@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
-use InvalidArgumentException;
+use App\Support\Montant\Pourcentage;
 
 /**
  * Création et modification des types de comptes d'épargne. Le code et la devise ne changent jamais.
@@ -49,16 +49,7 @@ final class EnregistrerTypeCompte
      */
     public static function pointsDeBase(string $saisie): int
     {
-        $texte = str_replace([' ', ','], ['', '.'], trim($saisie));
-        if ($texte === '') {
-            return 0;
-        }
-        if (preg_match('/^\d{1,3}(\.\d{1,2})?$/', $texte) !== 1) {
-            throw new InvalidArgumentException("Taux d'intérêt invalide : « {$saisie} » (ex. 3,25).");
-        }
-        [$unites, $decimales] = array_pad(explode('.', $texte), 2, '0');
-
-        return (int) $unites * 100 + (int) str_pad($decimales, 2, '0');
+        return Pourcentage::pointsDeBase($saisie, "Taux d'intérêt");
     }
 
     /**

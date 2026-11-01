@@ -44,6 +44,8 @@ class MouvementEpargne extends Model
             'tontine_tour' => 'Tour de tontine',
             'partage_tontine' => 'Partage de fin de cycle',
             'aide_fonds_social' => 'Aide du fonds social',
+            'decaissement_credit' => 'Décaissement de prêt',
+            'remboursement_credit' => 'Remboursement de prêt',
             default => $this->type,
         };
     }

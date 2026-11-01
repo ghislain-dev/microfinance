@@ -30,4 +30,9 @@ enum Droit: string
     case EpargneRemuneration = 'epargne.remuneration';
     case TontinesGerer = 'tontines.gerer';
     case TontinesValider = 'tontines.valider';
+    case CreditParametrer = 'credit.parametrer';
+    case CreditSaisir = 'credit.saisir';
+    case CreditApprouverComite = 'credit.approuver_comite';
+    case CreditApprouverGerant = 'credit.approuver_gerant';
+    case CreditDecaisser = 'credit.decaisser';
 }

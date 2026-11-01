@@ -22,7 +22,7 @@ use App\Support\Montant\Montant;
  */
 final class RegleEpargne
 {
-    public function __construct(private readonly EmettreRecu $recus) {}
+    public function __construct(private readonly EmettreRecu $recus, private readonly Blocages $blocages) {}
 
     /**
      * Toute opération en espèces exige une session de caisse ouverte de l'opérateur (skill §7).
@@ -59,10 +59,17 @@ final class RegleEpargne
         }
     }
 
+    /**
+     * Le solde minimum du type et les montants bloqués (garantie de prêt) restent sur le compte.
+     */
     public function exigerSoldeMinimum(Montant $soldeApres, CompteEpargne $compte): void
     {
         if ($soldeApres->comparer($compte->type->solde_minimum) < 0) {
             throw new CompteEpargneRefuse("Opération refusée : le solde minimum de {$compte->type->solde_minimum->formate()} doit rester sur le compte.");
+        }
+        $bloque = $this->blocages->total($compte);
+        if ($soldeApres->comparer($compte->type->solde_minimum->plus($bloque)) < 0) {
+            throw new CompteEpargneRefuse("Opération refusée : {$bloque->formate()} sont bloqués en garantie de prêt sur le compte {$compte->numero}.");
         }
     }
 
