@@ -42,6 +42,8 @@ class MouvementEpargne extends Model
             'interets' => 'Intérêts',
             'ristourne' => 'Ristourne',
             'tontine_tour' => 'Tour de tontine',
+            'partage_tontine' => 'Partage de fin de cycle',
+            'aide_fonds_social' => 'Aide du fonds social',
             default => $this->type,
         };
     }

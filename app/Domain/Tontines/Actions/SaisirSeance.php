@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Tontines\Actions;
 
 use App\Domain\Caisse\Models\SessionCaisse;
-use App\Domain\Epargne\Models\CompteEpargne;
 use App\Domain\Epargne\Services\RegleEpargne;
 use App\Domain\Finance\Actions\OuvrirCompte;
 use App\Domain\Finance\Comptes\NatureCompte;
@@ -22,6 +21,7 @@ use App\Domain\Tontines\Models\Tour;
 use App\Domain\Tontines\ModeTours;
 use App\Domain\Tontines\Presence;
 use App\Domain\Tontines\Services\Dettes;
+use App\Domain\Tontines\Services\EpargneDuMembre;
 use App\Domain\Tontines\StatutCycle;
 use App\Domain\Tontines\StatutSeance;
 use App\Domain\Tontines\TontineRefusee;
@@ -44,6 +44,7 @@ final class SaisirSeance
         private readonly RegleEpargne $regles,
         private readonly OuvrirCompte $ouvrirCompte,
         private readonly Dettes $dettes,
+        private readonly EpargneDuMembre $epargne,
     ) {}
 
     /**
@@ -218,9 +219,7 @@ final class SaisirSeance
         }
 
         $beneficiaireId = Tour::query()->where('cycle_id', $cycle->id)->where('rang', $seance->rang)->value('membre_id');
-        $compte = CompteEpargne::query()->with('compte')->where('membre_id', $beneficiaireId)
-            ->whereHas('type', fn ($q) => $q->where('devise', $cycle->devise->value))->orderBy('id')->first()
-            ?? throw new TontineRefusee("Le bénéficiaire du tour n’a pas de compte d’épargne en {$cycle->devise->value} : ouvrez-en un avant la séance.");
+        $compte = $this->epargne->exiger((int) $beneficiaireId, $cycle->devise, 'bénéficiaire du tour');
 
         $verse = $pot->moins($remise);
         $lignes = [LigneEcriture::debit($cycle->compteFonds, $pot), LigneEcriture::credit($compte->compte, $verse)];

@@ -6,6 +6,8 @@ namespace App\Domain\Tontines\Actions;
 
 use App\Domain\Finance\Actions\OuvrirCompte;
 use App\Domain\Finance\Comptes\NatureCompte;
+use App\Domain\Finance\LigneEcriture;
+use App\Domain\Finance\MoteurFinancier;
 use App\Domain\Membres\StatutMembre;
 use App\Domain\Tontines\Models\Cycle;
 use App\Domain\Tontines\Models\Groupe;
@@ -31,7 +33,11 @@ use Illuminate\Support\Facades\DB;
  */
 final class DemarrerCycle
 {
-    public function __construct(private readonly OuvrirCompte $ouvrirCompte, private readonly JournalAudit $journal) {}
+    public function __construct(
+        private readonly OuvrirCompte $ouvrirCompte,
+        private readonly JournalAudit $journal,
+        private readonly MoteurFinancier $moteur,
+    ) {}
 
     /**
      * @param  list<int>|null  $ordre  identifiants des membres dans l'ordre de passage (mode « ordre fixé »)
@@ -79,12 +85,34 @@ final class DemarrerCycle
                 }
 
                 $this->fixerTours($cycle, $participants, $ordre);
+                $this->reporterFondsSocial($groupe, $cycle);
 
                 return $cycle;
             });
         } catch (UniqueConstraintViolationException) {
             throw new TontineRefusee('Le groupe a déjà un cycle en cours.');
         }
+    }
+
+    /**
+     * Le solde du fonds social du cycle clôturé précédent passe au nouveau cycle (décision du 2026-10-31).
+     */
+    private function reporterFondsSocial(Groupe $groupe, Cycle $cycle): void
+    {
+        $precedent = $groupe->cycles()->with('compteFondsSocial')->where('statut', StatutCycle::Cloture->value)
+            ->orderByDesc('numero')->first();
+        if ($precedent === null || $precedent->compteFondsSocial === null || $precedent->devise !== $cycle->devise) {
+            return;
+        }
+        $solde = $this->moteur->soldeReel($precedent->compteFondsSocial);
+        if (! $solde->estPositif()) {
+            return;
+        }
+
+        $this->moteur->executer("report-fonds-social:{$precedent->id}:{$cycle->id}", 'tontine_report_fs', [
+            LigneEcriture::debit($precedent->compteFondsSocial, $solde),
+            LigneEcriture::credit($cycle->compteFondsSocial()->firstOrFail(), $solde),
+        ], motif: "Report du fonds social du cycle {$precedent->numero}");
     }
 
     /**
