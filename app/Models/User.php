@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Membres\Models\Membre;
 use App\Domain\Organisation\Models\Agence;
 use App\Domain\Organisation\Policies\UserPolicy;
 use App\Support\Audit\EstAudite;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -41,6 +43,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Membre lié à un compte d'accès mobile (ADR 022) ; null pour le personnel.
+     *
+     * @return BelongsTo<Membre, $this>
+     */
+    public function membre(): BelongsTo
+    {
+        return $this->belongsTo(Membre::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -51,6 +63,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'actif' => 'boolean',
+            'membre_id' => 'integer',
+            'mot_de_passe_provisoire' => 'boolean',
         ];
     }
 }

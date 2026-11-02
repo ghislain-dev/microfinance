@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Web;
 use App\Domain\Epargne\Models\TypeCompteEpargne;
 use App\Domain\Epargne\Services\ComptesDuMembre;
 use App\Domain\Membres\Actions\ChangerStatutMembre;
+use App\Domain\Membres\Actions\CreerAccesMobile;
 use App\Domain\Membres\Actions\InscrireMembre;
 use App\Domain\Membres\Actions\ModifierMembre;
 use App\Domain\Membres\Exceptions\PieceDejaEnregistree;
@@ -77,6 +78,7 @@ class MembreController extends Controller
             'statuts' => StatutMembre::cases(),
             'comptes' => $comptes->pour($membre),
             'typesProposes' => TypeCompteEpargne::query()->where('actif', true)->orderBy('code')->get(),
+            'accesMobile' => User::query()->where('membre_id', $membre->id)->exists(),
         ]);
     }
 
@@ -104,6 +106,19 @@ class MembreController extends Controller
         $changer->executer($this->acteur($request), $membre, StatutMembre::from($donnees['statut']));
 
         return to_route('membres.show', $membre)->with('statut', 'Statut mis à jour.');
+    }
+
+    /**
+     * Crée ou réinitialise l'accès mobile ; le mot de passe provisoire n'est montré qu'une fois.
+     */
+    public function accesMobile(Request $request, Membre $membre, CreerAccesMobile $creer): RedirectResponse
+    {
+        Gate::authorize('accesMobile', $membre);
+        [, $provisoire] = $creer->executer($this->acteur($request), $membre);
+
+        return to_route('membres.show', $membre)->with('acces_mobile', [
+            'organisation' => $membre->organisation?->code, 'numero' => $membre->numero, 'mot_de_passe' => $provisoire,
+        ]);
     }
 
     /**

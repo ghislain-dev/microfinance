@@ -81,6 +81,25 @@
         @endcan
     </div>
 
+    @can('accesMobile', $membre)
+        <div class="card card-body mb-4">
+            <h2 class="h6">Application mobile</h2>
+            @if (session('acces_mobile'))
+                <div class="alert alert-warning mb-2" role="status">
+                    Remettez ces identifiants au membre ; le mot de passe ne sera plus affiché.<br>
+                    Organisation : <strong>{{ session('acces_mobile.organisation') }}</strong> ·
+                    Numéro : <strong>{{ session('acces_mobile.numero') }}</strong> ·
+                    Mot de passe provisoire : <strong class="font-monospace">{{ session('acces_mobile.mot_de_passe') }}</strong>
+                </div>
+            @endif
+            <form method="POST" action="{{ route('membres.acces-mobile', $membre) }}" class="d-flex gap-2 align-items-center">
+                @csrf
+                <span class="small text-body-secondary">{{ $accesMobile ? 'Accès créé. Une réinitialisation déconnecte ses téléphones.' : 'Aucun accès.' }}</span>
+                <button type="submit" class="btn btn-outline-primary btn-sm">{{ $accesMobile ? 'Réinitialiser le mot de passe' : 'Créer l’accès' }}</button>
+            </form>
+        </div>
+    @endcan
+
     @can('changerStatut', $membre)
         <form method="POST" action="{{ route('membres.statut', $membre) }}" class="card card-body">
             @csrf

@@ -44,6 +44,8 @@ const MATRICE_PHASE_0 = [
     'credit.approuver_comite' => ['comite'],
     'credit.approuver_gerant' => ['gerant'],
     'credit.decaisser' => ['gerant', 'comptable'],
+
+    'membres.acces_mobile' => ['gerant', 'caissier'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

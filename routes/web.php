@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/membres/{membre}/modifier', [MembreController::class, 'edit'])->whereNumber('membre')->name('membres.edit');
     Route::put('/membres/{membre}', [MembreController::class, 'update'])->whereNumber('membre')->name('membres.update');
     Route::patch('/membres/{membre}/statut', [MembreController::class, 'changerStatut'])->whereNumber('membre')->name('membres.statut');
+    Route::post('/membres/{membre}/acces-mobile', [MembreController::class, 'accesMobile'])->whereNumber('membre')->name('membres.acces-mobile');
 
     Route::get('/caisses', [CaisseController::class, 'index'])->name('caisses.index');
     Route::get('/caisses/creer', [CaisseController::class, 'create'])->name('caisses.create');

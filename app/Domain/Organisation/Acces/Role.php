@@ -53,6 +53,7 @@ enum Role: string
                 Droit::EpargneParametrer, Droit::EpargneOuvrirCompte, Droit::EpargneVirer, Droit::OperationsValiderDecaissement,
                 Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::TontinesGerer,
                 Droit::CreditParametrer, Droit::CreditSaisir, Droit::CreditApprouverGerant, Droit::CreditDecaisser,
+                Droit::MembresAccesMobile,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
@@ -60,7 +61,7 @@ enum Role: string
             ],
             self::Caissier => [
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,
-                Droit::EpargneVirer,
+                Droit::EpargneVirer, Droit::MembresAccesMobile,
             ],
             self::Collecteur => [Droit::TableauDeBordVoir, Droit::MembresVoir],
             self::AgentCredit => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::CreditSaisir],

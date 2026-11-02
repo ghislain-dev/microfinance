@@ -95,6 +95,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('otp', fn (Request $requete) => Limit::perMinute(5)
             ->by($requete->session()->get(ConnexionController::EN_ATTENTE, '-').'|'.$requete->ip()));
 
+        // Membres : code de l'organisation + numéro + IP (pas d'e-mail).
+        RateLimiter::for('connexion-membre', fn (Request $requete) => Limit::perMinute(5)
+            ->by(Str::upper($requete->string('organisation')->value()).'|'.Str::upper($requete->string('numero')->value()).'|'.$requete->ip()));
+
         RateLimiter::for('api', fn (Request $requete) => Limit::perMinute(60)
             ->by((string) ($requete->user()?->getAuthIdentifier() ?? $requete->ip())));
     }

@@ -39,4 +39,12 @@ class MembrePolicy
     {
         return $this->update($acteur, $membre);
     }
+
+    /**
+     * Accès à l'application mobile : gérant ou caissier, au guichet (ADR 022).
+     */
+    public function accesMobile(User $acteur, Membre $membre): bool
+    {
+        return $acteur->organisation_id === $membre->organisation_id && $acteur->can(Droit::MembresAccesMobile->value);
+    }
 }
