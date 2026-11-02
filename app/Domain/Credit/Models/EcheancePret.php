@@ -58,6 +58,11 @@ class EcheancePret extends Model
         return $this->penalite->moins($this->penalite_payee);
     }
 
+    public function paye(): Montant
+    {
+        return $this->capital_paye->plus($this->interet_paye)->plus($this->penalite_payee);
+    }
+
     public function resteDu(): Montant
     {
         return $this->capitalRestant()->plus($this->interetRestant())->plus($this->penaliteRestante());

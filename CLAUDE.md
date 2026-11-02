@@ -154,9 +154,9 @@ Règles de dépendance entre modules :
 - [x] Partage de fin de cycle calculé + validation du comité
 
 ### Phase 4 — Crédit (≈ 2 semaines)
-- [ ] Demande, analyse, approbation multi-niveaux selon le montant, décaissement
-- [ ] Échéancier linéaire et dégressif (écart d'arrondi sur la dernière échéance)
-- [ ] Remboursements (ordre : pénalités → intérêts → capital), retards, PAR 30/90
+- [x] Demande, analyse, approbation multi-niveaux selon le montant, décaissement
+- [x] Échéancier linéaire et dégressif (écart d'arrondi sur la dernière échéance)
+- [x] Remboursements (ordre : pénalités → intérêts → capital), retards, PAR 30/90
 
 ### Phase 5 — API et applications mobiles (≈ 3 semaines)
 - [ ] API `/api/v1` versionnée, Resources, documentation
