@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
 use App\Http\Controllers\Web\ChangeController;
+use App\Http\Controllers\Web\CollecteController;
 use App\Http\Controllers\Web\CompteEpargneController;
 use App\Http\Controllers\Web\CycleController;
 use App\Http\Controllers\Web\DemandeDecaissementController;
@@ -121,5 +122,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/prets/{pret}/decaissement', [PretController::class, 'decaisser'])->whereNumber('pret')->name('prets.decaissement');
     Route::post('/prets/{pret}/remboursements', [PretController::class, 'rembourser'])->whereNumber('pret')->name('prets.remboursements');
     Route::post('/prets/{pret}/{decision}', [PretController::class, 'decider'])->whereNumber('pret')->whereIn('decision', ['approuver', 'rejeter'])->name('prets.decider');
+    Route::get('/collecte', [CollecteController::class, 'index'])->name('collecte.index');
+    Route::post('/collecte/parametres', [CollecteController::class, 'parametres'])->name('collecte.parametres');
+    Route::post('/collecte/appareils/{appareil}/{decision}', [CollecteController::class, 'appareil'])->whereNumber('appareil')
+        ->whereIn('decision', ['autoriser', 'revoquer'])->name('collecte.appareil');
+    Route::post('/collecte/{collecteur}/tournee', [CollecteController::class, 'affecter'])->whereNumber('collecteur')->name('collecte.affecter');
+    Route::post('/collecte/{collecteur}/tournee/{membre}/retirer', [CollecteController::class, 'retirer'])->whereNumber(['collecteur', 'membre'])->name('collecte.retirer');
     Route::get('/garanties/{garantie}/piece', [PretController::class, 'piece'])->whereNumber('garantie')->name('garanties.piece');
 });

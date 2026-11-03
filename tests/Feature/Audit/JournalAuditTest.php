@@ -127,7 +127,7 @@ it('journalise le changement de rôles', function () {
 
 it('journalise la création et la révocation d’un jeton mobile', function () {
     Notification::fake();
-    $collecteur = Acteurs::avecRole('collecteur');
+    $collecteur = Acteurs::avecRole('agent_credit');
     $demande = ['email' => $collecteur->email, 'password' => 'password', 'appareil' => 'Itel A70'];
     postJson('/api/v1/auth/jetons', $demande);
     $jeton = postJson('/api/v1/auth/jetons', [...$demande, 'code' => Connexion::dernierCode($collecteur)])->json('jeton');

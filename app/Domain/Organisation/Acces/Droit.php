@@ -36,4 +36,6 @@ enum Droit: string
     case CreditApprouverGerant = 'credit.approuver_gerant';
     case CreditDecaisser = 'credit.decaisser';
     case MembresAccesMobile = 'membres.acces_mobile';
+    case CollecteGerer = 'collecte.gerer';
+    case CollecteSaisir = 'collecte.saisir';
 }

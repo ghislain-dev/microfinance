@@ -17,6 +17,7 @@ class JetonRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'max:255'],
             'appareil' => ['required', 'string', 'max:100'],
+            'appareil_id' => ['nullable', 'uuid'], // obligatoire pour un collecteur (téléphone autorisé)
             'code' => ['nullable', 'string', 'regex:/^\d{'.(int) config('otp.longueur').'}$/'],
         ];
     }
