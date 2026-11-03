@@ -160,7 +160,7 @@ Règles de dépendance entre modules :
 
 ### Phase 5 — API et applications mobiles (≈ 3 semaines)
 - [ ] API `/api/v1` versionnée, Resources, documentation
-- [ ] Endpoint de synchronisation par lots (idempotent, voir skill)
+- [x] Endpoint de synchronisation par lots (idempotent, voir skill)
 - [ ] App membres : solde, cotisations, tour, échéances, notifications
 - [ ] App collecteurs : saisie hors-ligne SQLite, synchronisation, reçus
 
