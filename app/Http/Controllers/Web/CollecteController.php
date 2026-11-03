@@ -10,6 +10,7 @@ use App\Domain\Collecte\Actions\FixerParametresCollecte;
 use App\Domain\Collecte\Actions\RetirerMembre;
 use App\Domain\Collecte\CollecteRefusee;
 use App\Domain\Collecte\Models\Appareil;
+use App\Domain\Collecte\Models\OperationSync;
 use App\Domain\Collecte\Models\ParametresCollecte;
 use App\Domain\Collecte\Models\PlafondCollecte;
 use App\Domain\Collecte\Models\Tournee;
@@ -38,6 +39,7 @@ class CollecteController extends Controller
                 ->whereNull('retire_le')->get()->groupBy('collecteur_id'),
             'parametres' => ParametresCollecte::query()->first(),
             'plafonds' => PlafondCollecte::query()->get()->keyBy(fn (PlafondCollecte $p) => $p->devise->value),
+            'rejets' => OperationSync::query()->where('statut', 'rejete')->latest('id')->paginate(20),
         ]);
     }
 

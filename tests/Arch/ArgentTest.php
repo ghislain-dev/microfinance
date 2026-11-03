@@ -38,7 +38,10 @@ it('n’écrit jamais dans operations ou ecritures par DB::table hors de Domain/
         if (str_contains($fichier->getPathname(), '/app/Domain/Finance/')) {
             continue;
         }
-        if (preg_match('/[\'"](operations|ecritures)[\'"]/', (string) file_get_contents($fichier->getPathname()))) {
+        // Toute écriture visant ces tables : DB::table('operations'…) ou SQL brut (INSERT / UPDATE / DELETE).
+        // (Le mot seul est permis : le champ « operations » d'un lot de synchronisation n'écrit rien.)
+        $code = (string) file_get_contents($fichier->getPathname());
+        if (preg_match('/DB::table\(\s*[\'"](operations|ecritures)[\'"]|(insert\s+into|update|delete\s+from)\s+`?(operations|ecritures)\b/i', $code)) {
             $fautifs[] = $fichier->getPathname();
         }
     }

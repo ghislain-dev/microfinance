@@ -36,6 +36,28 @@
         </div>
     </form>
 
+    <div class="card mb-4">
+        <div class="card-header">Opérations refusées à la synchronisation</div>
+        <div class="table-responsive">
+            <table class="table mb-0 small">
+                <thead><tr><th>Reçue le</th><th>Saisie le</th><th>Type</th><th>Membre</th><th>Raison</th></tr></thead>
+                <tbody>
+                    @forelse ($rejets as $rejet)
+                        <tr>
+                            <td>{{ $rejet->created_at?->format('d/m/Y H:i') }}</td>
+                            <td>{{ $rejet->getAttribute('saisi_le')?->format('d/m/Y H:i') }}</td>
+                            <td>{{ $rejet->getAttribute('type') }}</td>
+                            <td>{{ $rejet->getAttribute('membre_id') }}</td>
+                            <td>{{ $rejet->raison }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="text-center text-body-secondary py-3">Aucune.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     @forelse ($collecteurs as $collecteur)
         <div class="card mb-4">
             <div class="card-header">{{ $collecteur->name }}</div>

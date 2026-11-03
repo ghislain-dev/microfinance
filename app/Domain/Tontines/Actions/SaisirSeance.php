@@ -117,24 +117,38 @@ final class SaisirSeance
             if ($parts === false) {
                 throw new TontineRefusee("{$membre->numero} : de 0 à {$cycle->parts_max} parts par séance.");
             }
-            $montantParts = new Montant($cycle->montant_cotisation->centimes * $parts, $cycle->devise);
-            $this->encaisser($seance, $membre, 'parts', $montantParts, $caisse, $cycle->compteFonds, $parts);
+            $prepaye = $this->dejaCollecte($seance, $membre, 'parts');
+            if ($prepaye !== null) {
+                $parts = (int) $prepaye->getAttribute('parts'); // collecté par le collecteur : pas de second encaissement
+            } else {
+                $montantParts = new Montant($cycle->montant_cotisation->centimes * $parts, $cycle->devise);
+                $this->encaisser($seance, $membre, 'parts', $montantParts, $caisse, $cycle->compteFonds, $parts);
+            }
             $impaye = $parts < $cycle->parts_min; // pas de dette de parts : épargne volontaire
         } else {
-            $cotisation = $this->montant($ligne['cotisation'] ?? '0', $cycle);
+            $prepaye = $this->dejaCollecte($seance, $membre, 'cotisation');
+            $cotisation = $prepaye !== null ? new Montant((int) $prepaye->getAttribute('montant'), $cycle->devise) : $this->montant($ligne['cotisation'] ?? '0', $cycle);
             if ($cotisation->comparer($cycle->montant_cotisation) > 0) {
                 throw new TontineRefusee("{$membre->numero} : la cotisation dépasse {$cycle->montant_cotisation->formate()}.");
             }
-            $this->encaisser($seance, $membre, 'cotisation', $cotisation, $caisse, $cycle->compteFonds);
+            if ($prepaye === null) {
+                $this->encaisser($seance, $membre, 'cotisation', $cotisation, $caisse, $cycle->compteFonds);
+            }
             $reste = $cycle->montant_cotisation->moins($cotisation);
             $this->constater($cycle, $seance, $membre, 'cotisation', $reste, $cycle->compteFonds);
             $impaye = $reste->estPositif();
         }
 
+        $fondsSocialCollecte = $this->dejaCollecte($seance, $membre, 'fonds_social');
+        if ($fondsSocialCollecte !== null) {
+            $fondsSocial = new Montant((int) $fondsSocialCollecte->getAttribute('montant'), $cycle->devise);
+        }
         if ($fondsSocial->comparer($cycle->cotisation_fonds_social) > 0) {
             throw new TontineRefusee("{$membre->numero} : le fonds social dépasse {$cycle->cotisation_fonds_social->formate()}.");
         }
-        $this->encaisser($seance, $membre, 'fonds_social', $fondsSocial, $caisse, $cycle->compteFondsSocial);
+        if ($fondsSocialCollecte === null) {
+            $this->encaisser($seance, $membre, 'fonds_social', $fondsSocial, $caisse, $cycle->compteFondsSocial);
+        }
         $this->constater($cycle, $seance, $membre, 'fonds_social', $cycle->cotisation_fonds_social->moins($fondsSocial), $cycle->compteFondsSocial);
 
         // Pénalités automatiques : dettes envers le cycle (elles lui reviennent, décision du 2026-10-31).
@@ -147,6 +161,14 @@ final class SaisirSeance
         (new PresenceTontine)->forceFill([
             'organisation_id' => $cycle->organisation_id, 'seance_id' => $seance->id, 'membre_id' => $membre->id, 'presence' => $presence->value,
         ])->save();
+    }
+
+    /**
+     * Cotisation déjà encaissée par un collecteur pour cette séance (ADR 022) : la feuille la reprend telle quelle.
+     */
+    private function dejaCollecte(Seance $seance, Membre $membre, string $type): ?Cotisation
+    {
+        return Cotisation::query()->where('seance_id', $seance->id)->where('membre_id', $membre->id)->where('type', $type)->first();
     }
 
     /**

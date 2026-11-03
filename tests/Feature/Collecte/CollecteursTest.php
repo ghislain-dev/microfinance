@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Domain\Caisse\Actions\OuvrirSession;
+use App\Domain\Caisse\Billetage;
 use App\Domain\Collecte\Actions\AffecterMembre;
 use App\Domain\Collecte\Actions\DeciderAppareil;
 use App\Domain\Collecte\Actions\FixerParametresCollecte;
 use App\Domain\Collecte\Actions\RetirerMembre;
 use App\Domain\Collecte\CollecteRefusee;
 use App\Domain\Collecte\Models\Appareil;
+use App\Domain\Collecte\Services\CaisseCollecteur;
 use App\Domain\Epargne\Actions\Deposer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Notification;
@@ -146,4 +149,15 @@ it('gère téléphones, tournées et paramètres depuis l’écran Collecte (gé
 
     actingAs($c->g->caissier);
     get('/collecte')->assertForbidden();
+});
+
+it('n’ouvre jamais la caisse d’un collecteur au guichet et ne la liste pas', function () {
+    $c = Collecte::preparer();
+    $caisse = app(CaisseCollecteur::class)->de($c->collecteur);
+
+    expect($caisse)->not->toBeNull()
+        ->and(fn () => app(OuvrirSession::class)->executer($c->g->gerant, $caisse, Billetage::vide()))
+        ->toThrow(AuthorizationException::class);
+    actingAs($c->g->gerant);
+    get('/caisses')->assertOk()->assertDontSeeText((string) $caisse?->getAttribute('code'));
 });

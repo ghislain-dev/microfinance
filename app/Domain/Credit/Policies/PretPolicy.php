@@ -69,4 +69,12 @@ class PretPolicy
     {
         return $pret->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CaisseOperer->value);
     }
+
+    /**
+     * Remboursement encaissé par le collecteur sur le terrain.
+     */
+    public function collecter(User $acteur, Pret $pret): bool
+    {
+        return $pret->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CollecteSaisir->value);
+    }
 }

@@ -29,4 +29,12 @@ class CyclePolicy
     {
         return $modele->organisation_id === $acteur->organisation_id && $acteur->can(Droit::TontinesGerer->value);
     }
+
+    /**
+     * Cotisation collectée sur le terrain pour la prochaine séance (ADR 022).
+     */
+    public function collecter(User $acteur, Cycle $modele): bool
+    {
+        return $modele->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CollecteSaisir->value);
+    }
 }

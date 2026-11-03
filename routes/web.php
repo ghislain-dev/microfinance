@@ -23,6 +23,7 @@ use App\Http\Controllers\Web\SessionCaisseController;
 use App\Http\Controllers\Web\SeuilValidationController;
 use App\Http\Controllers\Web\TontineController;
 use App\Http\Controllers\Web\TypeCompteEpargneController;
+use App\Http\Controllers\Web\VersementController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -128,5 +129,8 @@ Route::middleware('auth')->group(function () {
         ->whereIn('decision', ['autoriser', 'revoquer'])->name('collecte.appareil');
     Route::post('/collecte/{collecteur}/tournee', [CollecteController::class, 'affecter'])->whereNumber('collecteur')->name('collecte.affecter');
     Route::post('/collecte/{collecteur}/tournee/{membre}/retirer', [CollecteController::class, 'retirer'])->whereNumber(['collecteur', 'membre'])->name('collecte.retirer');
+    Route::get('/versements', [VersementController::class, 'index'])->name('versements.index');
+    Route::post('/versements', [VersementController::class, 'store'])->name('versements.store');
+    Route::post('/versements/{versement}/valider', [VersementController::class, 'valider'])->whereNumber('versement')->name('versements.valider');
     Route::get('/garanties/{garantie}/piece', [PretController::class, 'piece'])->whereNumber('garantie')->name('garanties.piece');
 });

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Credit\Actions;
 
+use App\Domain\Caisse\Models\Caisse;
 use App\Domain\Credit\CreditRefuse;
 use App\Domain\Credit\Models\EcheancePret;
 use App\Domain\Credit\Models\Pret;
@@ -37,10 +38,13 @@ final class RembourserPret
         private readonly Blocages $blocages,
     ) {}
 
-    public function executer(User $operateur, Pret $pret, Montant $montant, ModeRemboursement $mode, string $cle): Remboursement
+    /**
+     * @param  Caisse|null  $caisseCollecteur  remboursement en espèces encaissé sur le terrain par le collecteur (ADR 022)
+     */
+    public function executer(User $operateur, Pret $pret, Montant $montant, ModeRemboursement $mode, string $cle, ?Caisse $caisseCollecteur = null): Remboursement
     {
-        AutoriserDansOrganisation::autoriser($operateur, 'rembourser', $pret);
-        $session = $mode === ModeRemboursement::Especes ? $this->regles->sessionOuverte($operateur) : null;
+        AutoriserDansOrganisation::autoriser($operateur, $caisseCollecteur === null ? 'rembourser' : 'collecter', $pret);
+        $session = $mode === ModeRemboursement::Especes && $caisseCollecteur === null ? $this->regles->sessionOuverte($operateur) : null;
 
         if (($deja = $this->moteur->dejaEnregistree($cle)) !== null) {
             return Remboursement::query()->where('operation_id', $deja->id)->firstOrFail();
@@ -49,7 +53,7 @@ final class RembourserPret
             throw new CreditRefuse("Montant attendu : positif, en {$pret->devise->value}.");
         }
 
-        return DB::transaction(function () use ($pret, $montant, $mode, $cle, $session) {
+        return DB::transaction(function () use ($pret, $montant, $mode, $cle, $session, $caisseCollecteur) {
             $pret = Pret::query()->with(['comptePret', 'comptePenalites'])->whereKey($pret->id)->lockForUpdate()->firstOrFail();
             if ($pret->statut !== StatutPret::EnCours) {
                 throw new CreditRefuse("Le prêt {$pret->numero} n'est pas en cours ({$pret->statut->libelle()}).");
@@ -69,7 +73,7 @@ final class RembourserPret
                 $this->regles->exigerSoldeMinimum($this->moteur->soldeReel($compteEpargne->compte)->moins($montant), $compteEpargne);
                 $source = $compteEpargne->compte;
             } else {
-                $source = $session?->caisse->compte($pret->devise) ?? throw new CreditRefuse('Session de caisse requise.');
+                $source = ($caisseCollecteur ?? $session?->caisse)?->compte($pret->devise) ?? throw new CreditRefuse('Session de caisse requise.');
             }
 
             $lignes = [LigneEcriture::debit($source, $montant)];

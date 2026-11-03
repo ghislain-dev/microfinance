@@ -25,6 +25,14 @@ class CompteEpargnePolicy
         return $compte->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CaisseOperer->value);
     }
 
+    /**
+     * Dépôt ou retrait collecté sur le terrain (la tournée est vérifiée par la synchronisation).
+     */
+    public function collecter(User $acteur, CompteEpargne $compte): bool
+    {
+        return $compte->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CollecteSaisir->value);
+    }
+
     public function virer(User $acteur, CompteEpargne $source, CompteEpargne $destination): bool
     {
         return $source->organisation_id === $acteur->organisation_id

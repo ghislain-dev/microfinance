@@ -34,6 +34,7 @@ class CaissePolicy
     {
         return $caisse->organisation_id === $acteur->organisation_id
             && $caisse->actif
+            && $caisse->getAttribute('collecteur_id') === null // la caisse d'un collecteur ne s'ouvre pas au guichet
             && $acteur->can(Droit::CaisseOperer->value)
             && $acteur->agences()->whereKey($caisse->agence_id)->exists();
     }

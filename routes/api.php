@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Auth\AppareilController;
 use App\Http\Controllers\Api\V1\Auth\ConnexionMembreController;
 use App\Http\Controllers\Api\V1\Auth\JetonController;
 use App\Http\Controllers\Api\V1\Auth\MotDePasseController;
+use App\Http\Controllers\Api\V1\Collecte\SynchronisationController;
 use App\Http\Controllers\Api\V1\Collecte\TourneeController;
 use App\Http\Controllers\Api\V1\Membre\EspaceMembreController;
 use App\Http\Middleware\AppareilAutorise;
@@ -35,5 +36,6 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['abilities:collecteur', AppareilAutorise::class])->prefix('collecte')->group(function () {
             Route::get('/tournee', [TourneeController::class, 'show']);
         });
+        Route::post('/sync/lots', [SynchronisationController::class, 'store'])->middleware(['abilities:collecteur', AppareilAutorise::class]);
     });
 });

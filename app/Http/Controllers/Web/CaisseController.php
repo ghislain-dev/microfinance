@@ -24,7 +24,7 @@ class CaisseController extends Controller
 
         return view('caisses.index', [
             'caisses' => Caisse::query()->with(['agence:id,code,nom', 'sessionEnCours.caissier:id,name'])
-                ->orderBy('code')->paginate(50),
+                ->whereNull('collecteur_id')->orderBy('code')->paginate(50),
             'aValider' => SessionCaisse::query()->with(['caisse:id,code,libelle', 'caissier:id,name'])
                 ->whereIn('statut', [StatutSession::OuvertureAValider->value, StatutSession::EcartAJustifier->value])
                 ->orderBy('id')->get(),
