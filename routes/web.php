@@ -147,6 +147,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/comptabilite/clotures', [ClotureController::class, 'store']);
     Route::post('/comptabilite/clotures/{demande}/{decision}', [ClotureController::class, 'decider'])->whereNumber('demande')
         ->whereIn('decision', ['valider', 'rejeter'])->name('comptabilite.clotures.decider');
+    Route::post('/comptabilite/affectations', [ClotureController::class, 'affecter'])->name('comptabilite.affectations');
+    Route::post('/comptabilite/affectations/{affectation}/{decision}', [ClotureController::class, 'deciderAffectation'])->whereNumber('affectation')
+        ->whereIn('decision', ['valider', 'rejeter'])->name('comptabilite.affectations.decider');
     Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
     Route::post('/exports', [ExportController::class, 'store']);
     Route::get('/exports/{export}/fichier', [ExportController::class, 'fichier'])->whereNumber('export')->name('exports.fichier');

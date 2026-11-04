@@ -21,6 +21,7 @@ enum NatureCompte: string
     case PositionChange = 'position_change';     // contrepartie des conversions USD/CDF, une par devise
     case Produit = 'produit';
     case FondsPropres = 'fonds_propres'; // ex. excédents à répartir (ristournes)
+    case Resultat = 'resultat';          // résultat en instance d'affectation (ADR 025)
     case Charge = 'charge';
 
     /**
@@ -31,7 +32,7 @@ enum NatureCompte: string
     {
         return match ($this) {
             self::Caisse, self::Pret, self::CreanceMembre, self::CreancePersonnel, self::PositionChange, self::Charge => Sens::Debit,
-            self::Epargne, self::PartsSociales, self::CycleTontine, self::FondsSocial, self::Produit, self::FondsPropres => Sens::Credit,
+            self::Epargne, self::PartsSociales, self::CycleTontine, self::FondsSocial, self::Produit, self::FondsPropres, self::Resultat => Sens::Credit,
         };
     }
 
@@ -58,6 +59,7 @@ enum NatureCompte: string
             self::PositionChange => 'Position de change',
             self::Produit => 'Produit',
             self::FondsPropres => 'Fonds propres',
+            self::Resultat => 'Résultat',
             self::Charge => 'Charge',
         };
     }

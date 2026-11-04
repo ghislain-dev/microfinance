@@ -20,6 +20,7 @@ it('donne le sens normal de chaque nature', function (NatureCompte $nature, Sens
     [NatureCompte::FondsSocial, Sens::Credit],
     [NatureCompte::Produit, Sens::Credit],
     [NatureCompte::FondsPropres, Sens::Credit],
+    [NatureCompte::Resultat, Sens::Credit],
 ]);
 
 it('interdit le solde négatif pour la caisse, l’épargne, les parts et les fonds propres', function () {

@@ -24,7 +24,6 @@
   mouvement (« Intérêts », « Ristourne ») et un reçu.
 - Commande `epargne:calculer-interets`, planifiée le 1er du mois à 3 h, pour chaque organisation et devise.
 
-## Point ouvert
+## Alimentation des excédents
 
-- Alimentation du compte « excédents à répartir » : affectation du résultat, prévue avec la comptabilité
-  (Phase 6). D'ici là, la validation d'une ristourne est refusée faute de fonds.
+- Par l'affectation du résultat annuel, après la clôture de décembre (ADR 025).

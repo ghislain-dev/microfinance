@@ -54,4 +54,54 @@
         </ul>
     </div>
     <div class="mt-3">{{ $demandes->links() }}</div>
+
+    <div class="card mt-4">
+        <div class="card-header">Affectation du résultat aux excédents à répartir</div>
+        <div class="card-body">
+            @if ($annee === null)
+                <p class="text-body-secondary mb-0">Possible après la clôture du mois de décembre.</p>
+            @else
+                <p class="small">Résultat {{ $annee }} restant à affecter (produits − charges) :
+                    @foreach ($restants as $restant) <strong>{{ $restant->formate() }}</strong>@if (! $loop->last) · @endif @endforeach.
+                    Les excédents à répartir servent à la ristourne.</p>
+                @can('affecter', App\Domain\Comptabilite\Models\AffectationResultat::class)
+                    <form method="POST" action="{{ route('comptabilite.affectations') }}" class="row g-2 align-items-end">
+                        @csrf
+                        <input type="hidden" name="annee" value="{{ $annee }}">
+                        <div class="col-md-2">
+                            <label for="devise-affectation" class="form-label small">Devise</label>
+                            <select id="devise-affectation" name="devise" class="form-select">
+                                @foreach (App\Support\Montant\Devise::cases() as $d) <option value="{{ $d->value }}">{{ $d->value }}</option> @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="montant-affectation" class="form-label small">Montant à affecter</label>
+                            <input id="montant-affectation" name="montant" inputmode="decimal" required class="form-control">
+                        </div>
+                        <div class="col-auto"><button type="submit" class="btn btn-outline-primary">Proposer</button></div>
+                    </form>
+                @endcan
+            @endif
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach ($affectations as $a)
+                <li class="list-group-item">
+                    {{ $a->annee }} · {{ $a->montant->formate() }} sur {{ $a->resultat->formate() }} — {{ $utilisateurs[$a->propose_par_id] ?? '?' }}
+                    <span class="badge text-bg-{{ ['en_attente' => 'warning', 'validee' => 'success', 'rejetee' => 'danger'][$a->statut] }}">
+                        {{ ['en_attente' => 'À valider', 'validee' => 'Affecté', 'rejetee' => 'Rejetée'][$a->statut] }}</span>
+                    @can('validerAffectation', $a)
+                        <div class="row g-2 mt-1">
+                            @foreach (['valider' => ['Valider', 'success'], 'rejeter' => ['Rejeter', 'outline-danger']] as $decision => [$libelle, $couleur])
+                                <form method="POST" action="{{ route('comptabilite.affectations.decider', [$a, $decision]) }}" class="col-md-6 d-flex gap-2">
+                                    @csrf
+                                    <input name="motif" required maxlength="500" placeholder="Motif" aria-label="Motif" class="form-control form-control-sm">
+                                    <button type="submit" class="btn btn-{{ $couleur }} btn-sm">{{ $libelle }}</button>
+                                </form>
+                            @endforeach
+                        </div>
+                    @endcan
+                </li>
+            @endforeach
+        </ul>
+    </div>
 @endsection
