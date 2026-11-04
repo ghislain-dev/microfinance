@@ -1179,6 +1179,128 @@
           }
         }
       }
+    },
+    "/membre/comptes/{compte}/releves": {
+      "post": {
+        "summary": "Demande le relevé PDF d'un compte du membre",
+        "description": "Préparé en file d'attente (202 avec l'identifiant), puis téléchargé par GET /membre/releves/{releve}.",
+        "tags": [
+          "Membre"
+        ],
+        "parameters": [
+          {
+            "name": "compte",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "du": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "au": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                },
+                "required": [
+                  "du",
+                  "au"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Relevé en préparation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "statut": {
+                      "type": "string",
+                      "enum": [
+                        "en_attente",
+                        "pret",
+                        "echec"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Pas un jeton de membre"
+          },
+          "404": {
+            "description": "Compte ou relevé d'un autre membre"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          }
+        }
+      }
+    },
+    "/membre/releves/{releve}": {
+      "get": {
+        "summary": "Télécharge le relevé PDF",
+        "description": "202 tant qu'il est en préparation ; 200 avec le PDF ensuite.",
+        "tags": [
+          "Membre"
+        ],
+        "parameters": [
+          {
+            "name": "releve",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Relevé",
+            "content": {
+              "application/pdf": {}
+            }
+          },
+          "202": {
+            "description": "En préparation"
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Pas un jeton de membre"
+          },
+          "404": {
+            "description": "Compte ou relevé d'un autre membre"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          }
+        }
+      }
     }
   }
 }

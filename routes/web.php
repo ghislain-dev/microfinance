@@ -7,11 +7,13 @@ use App\Http\Controllers\Web\Auth\CodeOtpController;
 use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
 use App\Http\Controllers\Web\ChangeController;
+use App\Http\Controllers\Web\ClotureController;
 use App\Http\Controllers\Web\CollecteController;
 use App\Http\Controllers\Web\ComptabiliteController;
 use App\Http\Controllers\Web\CompteEpargneController;
 use App\Http\Controllers\Web\CycleController;
 use App\Http\Controllers\Web\DemandeDecaissementController;
+use App\Http\Controllers\Web\ExportController;
 use App\Http\Controllers\Web\MembreController;
 use App\Http\Controllers\Web\OperationEpargneController;
 use App\Http\Controllers\Web\OrganisationController;
@@ -22,6 +24,7 @@ use App\Http\Controllers\Web\RemunerationController;
 use App\Http\Controllers\Web\SeanceController;
 use App\Http\Controllers\Web\SessionCaisseController;
 use App\Http\Controllers\Web\SeuilValidationController;
+use App\Http\Controllers\Web\TableauDeBordController;
 use App\Http\Controllers\Web\TontineController;
 use App\Http\Controllers\Web\TypeCompteEpargneController;
 use App\Http\Controllers\Web\VersementController;
@@ -41,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/deconnexion', [ConnexionController::class, 'destroy'])->name('deconnexion');
 
     Route::redirect('/', '/tableau-de-bord');
-    Route::view('/tableau-de-bord', 'tableau-de-bord')
+    Route::get('/tableau-de-bord', TableauDeBordController::class)
         ->middleware('can:'.Droit::TableauDeBordVoir->value)->name('tableau-de-bord');
 
     Route::get('/membres', [MembreController::class, 'index'])->name('membres.index');
@@ -139,5 +142,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/comptabilite/journal', [ComptabiliteController::class, 'journal'])->name('comptabilite.journal');
     Route::get('/comptabilite/plan', [ComptabiliteController::class, 'plan'])->name('comptabilite.plan');
     Route::post('/comptabilite/plan', [ComptabiliteController::class, 'modifierPlan']);
+    Route::get('/comptabilite/clotures', [ClotureController::class, 'index'])->name('comptabilite.clotures');
+    Route::post('/comptabilite/clotures', [ClotureController::class, 'store']);
+    Route::post('/comptabilite/clotures/{demande}/{decision}', [ClotureController::class, 'decider'])->whereNumber('demande')
+        ->whereIn('decision', ['valider', 'rejeter'])->name('comptabilite.clotures.decider');
+    Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
+    Route::post('/exports', [ExportController::class, 'store']);
+    Route::get('/exports/{export}/fichier', [ExportController::class, 'fichier'])->whereNumber('export')->name('exports.fichier');
     Route::get('/garanties/{garantie}/piece', [PretController::class, 'piece'])->whereNumber('garantie')->name('garanties.piece');
 });

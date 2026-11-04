@@ -23,7 +23,8 @@ triés, partie double, idempotence), aucune écriture en période clôturée, so
      événement `OperationEnregistree` émis après validation de la transaction ;
   8. collision sur la clé (deux requêtes simultanées) → on renvoie l'opération de la requête gagnante.
 - Clôture provisoire : table `clotures_comptables` en insertion seule, commande
-  `finance:cloturer {organisation} {date}` (jamais dans le futur, jamais en arrière).
+  clôture mensuelle demandée par le comptable et validée par le gérant (ADR 023 ; la commande console
+  `finance:cloturer` de la Phase 1 a été retirée) — jamais dans le futur, jamais en arrière.
 - Refus métier : `OperationDesequilibree`, `CompteIndisponible`, `PeriodeCloturee`, `SoldeInsuffisant`
   (tous `RefusFinancier`) ; rien n'est écrit.
 

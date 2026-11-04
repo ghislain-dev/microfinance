@@ -38,7 +38,18 @@
         </div>
     </div>
 
-    <p class="text-body-secondary mt-4 mb-0">
-        Les indicateurs (épargne, tontines, crédits, caisse) apparaîtront ici avec les prochaines phases.
-    </p>
+    <div class="row g-4 mt-1">
+        @foreach ($blocs as $titre => $lignes)
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h6">{{ $titre }}</h2>
+                        <ul class="list-unstyled small mb-0">
+                            @foreach ($lignes as $ligne) <li>{{ $ligne }}</li> @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
 @endsection

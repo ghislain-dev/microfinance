@@ -19,7 +19,6 @@ use Tests\Support\Acteurs;
 use Tests\Support\GrandLivre;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\artisan;
 
 /**
  * Un caissier de l'organisation fait un dépôt de 100 USD.
@@ -135,7 +134,7 @@ it('extourne aujourd’hui une opération d’une période désormais clôturée
     actingAs($caissier);
     $ancienne = app(MoteurFinancier::class)->executer('ancienne', 'frais', [LigneEcriture::debit($caisse, $hier), LigneEcriture::credit($produit, $hier)], dateValeur: today()->subDays(3));
     Auth::forgetUser();
-    artisan('finance:cloturer', ['organisation' => $caissier->organisation->code, 'date' => today()->subDay()->toDateString(), '--force' => true])->assertSuccessful();
+    cloturerJusquAu($caissier->organisation()->firstOrFail(), today()->subDay());
     $gerant = Acteurs::avecRole('gerant', $caissier->organisation);
     actingAs($gerant);
 

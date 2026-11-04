@@ -29,7 +29,6 @@ use Tests\Support\DeuxOrganisations;
 use Tests\Support\GrandLivre;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\artisan;
 
 function usd(string $saisie): Montant
 {
@@ -180,8 +179,7 @@ it('autorise un solde négatif sur les autres natures', function () {
 it('refuse toute écriture dans une période clôturée (date de valeur ≤ clôture)', function () {
     $caisse = GrandLivre::compte(contexte()->userA, NatureCompte::Caisse);
     $epargne = GrandLivre::compte(contexte()->userA, NatureCompte::Epargne);
-    artisan('finance:cloturer', ['organisation' => contexte()->orgA->code, 'date' => today()->subDays(10)->toDateString(), '--force' => true])
-        ->assertSuccessful();
+    cloturerJusquAu(contexte()->orgA, today()->subDays(10));
     actingAs(contexte()->userA);
 
     expect(fn () => moteur()->executer('a', 'depot', depot($caisse, $epargne, usd('1')), dateValeur: today()->subDays(10)))
@@ -192,12 +190,12 @@ it('refuse toute écriture dans une période clôturée (date de valeur ≤ clô
         ->and($op->created_at->toDateString())->toBe(today()->toDateString()); // date de valeur ≠ date de saisie
 });
 
-it('clôture par console : jamais dans le futur, jamais en arrière, ligne non modifiable', function () {
-    $code = contexte()->orgA->code;
+it('clôture : jamais dans le futur, jamais en arrière, ligne non modifiable', function () {
+    $organisation = contexte()->orgA;
 
-    artisan('finance:cloturer', ['organisation' => $code, 'date' => today()->addDay()->toDateString(), '--force' => true])->assertFailed();
-    artisan('finance:cloturer', ['organisation' => $code, 'date' => today()->subMonth()->toDateString(), '--force' => true])->assertSuccessful();
-    artisan('finance:cloturer', ['organisation' => $code, 'date' => today()->subMonths(2)->toDateString(), '--force' => true])->assertFailed();
+    expect(fn () => cloturerJusquAu($organisation, today()->addDay()))->toThrow(InvalidArgumentException::class);
+    cloturerJusquAu($organisation, today()->subMonth());
+    expect(fn () => cloturerJusquAu($organisation, today()->subMonths(2)))->toThrow(InvalidArgumentException::class);
 
     expect(ClotureComptable::withoutGlobalScopes()->count())->toBe(1)
         ->and(fn () => ClotureComptable::withoutGlobalScopes()->firstOrFail()->delete())->toThrow(ModificationInterdite::class)
@@ -206,7 +204,7 @@ it('clôture par console : jamais dans le futur, jamais en arrière, ligne non m
 
 it('n’affecte pas les autres organisations par une clôture', function () {
     Auth::forgetUser(); // en console, aucun utilisateur n'est connecté
-    artisan('finance:cloturer', ['organisation' => contexte()->orgB->code, 'date' => today()->toDateString(), '--force' => true]);
+    cloturerJusquAu(contexte()->orgB, today());
     actingAs(contexte()->userA);
     $caisse = GrandLivre::compte(contexte()->userA, NatureCompte::Caisse);
     $epargne = GrandLivre::compte(contexte()->userA, NatureCompte::Epargne);

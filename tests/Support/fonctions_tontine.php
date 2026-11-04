@@ -8,13 +8,17 @@ use App\Domain\Caisse\Actions\OuvrirSession;
 use App\Domain\Caisse\Billetage;
 use App\Domain\Epargne\Actions\OuvrirCompteEpargne;
 use App\Domain\Epargne\Models\CompteEpargne;
+use App\Domain\Finance\Actions\CloturerPeriode;
 use App\Domain\Finance\MoteurFinancier;
 use App\Domain\Membres\Models\Membre;
+use App\Domain\Organisation\Models\Organisation;
 use App\Domain\Tontines\Actions\DemarrerCycle;
 use App\Domain\Tontines\Models\Cycle;
 use App\Domain\Tontines\Models\Seance;
 use App\Domain\Tontines\TypeGroupe;
 use App\Support\Montant\Devise;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Tests\Support\Epargnant;
 use Tests\Support\Guichet;
 use Tests\Support\Tontine;
@@ -71,4 +75,12 @@ function seance(Cycle $cycle, int $rang): Seance
 function soldeCdf(CompteEpargne $c): string
 {
     return app(MoteurFinancier::class)->soldeReel($c->compte)->formate();
+}
+
+/**
+ * Clôture directe (action du moteur) : les tests du moteur n'ont pas à passer par le circuit comptable puis gérant.
+ */
+function cloturerJusquAu(Organisation $organisation, CarbonInterface $date): void
+{
+    app(CloturerPeriode::class)->executer($organisation, CarbonImmutable::parse($date->toDateString()), 'test');
 }

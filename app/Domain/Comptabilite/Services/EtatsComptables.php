@@ -76,9 +76,9 @@ final class EtatsComptables
     /**
      * @return LengthAwarePaginator<int, OperationJournal>
      */
-    public function journal(Devise $devise, CarbonImmutable $du, CarbonImmutable $au, int $parPage = 50): LengthAwarePaginator
+    public function journal(Devise $devise, CarbonImmutable $du, CarbonImmutable $au, int $parPage = 50, ?int $numeroPage = null): LengthAwarePaginator
     {
-        $page = $this->lectures->journal($devise, $du, $au, $parPage);
+        $page = $this->lectures->journal($devise, $du, $au, $parPage, $numeroPage);
         $ids = collect($page->items())->flatMap(fn (array $o) => array_column($o['ecritures'], 'compte_id'))->unique()->values();
         $comptes = Compte::query()->whereIn('id', $ids)->get()->keyBy('id');
 

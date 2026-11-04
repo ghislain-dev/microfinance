@@ -15,6 +15,17 @@
         <div class="text-end">
             <div class="text-body-secondary small">Solde</div>
             <div class="fs-3">{{ $solde->formate() }}</div>
+            @can('demander', [App\Domain\Rapports\Models\Export::class, 'releve'])
+                <form method="POST" action="{{ route('exports.index') }}" class="d-flex gap-1 mt-2 justify-content-end">
+                    @csrf
+                    <input type="hidden" name="type" value="releve">
+                    <input type="hidden" name="format" value="pdf">
+                    <input type="hidden" name="compte_epargne_id" value="{{ $compte->id }}">
+                    <input type="date" name="du" value="{{ now()->startOfMonth()->toDateString() }}" aria-label="Relevé du" class="form-control form-control-sm w-auto">
+                    <input type="date" name="au" value="{{ now()->toDateString() }}" aria-label="Relevé au" class="form-control form-control-sm w-auto">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Relevé PDF</button>
+                </form>
+            @endcan
         </div>
     </div>
 

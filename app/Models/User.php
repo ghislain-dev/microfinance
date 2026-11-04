@@ -53,6 +53,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Identifiant du membre pour un accès mobile, null pour le personnel (lu même si la colonne n'est pas chargée).
+     */
+    public function membreId(): ?int
+    {
+        $id = $this->getAttributes()['membre_id'] ?? null;
+
+        return $id === null ? null : (int) $id;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

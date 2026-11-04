@@ -165,8 +165,8 @@ Règles de dépendance entre modules :
 - [x] App collecteurs : saisie hors-ligne SQLite, synchronisation, reçus
 
 ### Phase 6 — Rapports et comptabilité (≈ 2 semaines)
-- [ ] Grand livre, balance, journal, clôture mensuelle
-- [ ] Tableau de bord, relevé membre, exports PDF/Excel en file d'attente
+- [x] Grand livre, balance, journal, clôture mensuelle
+- [x] Tableau de bord, relevé membre, exports PDF/Excel en file d'attente
 
 ### Pilote (≈ 4 semaines)
 - [ ] Une tontine réelle pendant un cycle, double saisie papier + application

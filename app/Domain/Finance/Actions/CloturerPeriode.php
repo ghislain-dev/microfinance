@@ -11,7 +11,7 @@ use Carbon\CarbonImmutable;
 use InvalidArgumentException;
 
 /**
- * Clôture définitive jusqu'à une date incluse. En attendant la clôture mensuelle de la Phase 6.
+ * Clôture définitive jusqu'à une date incluse. Appelée seulement par la clôture mensuelle validée (ADR 023).
  */
 final class CloturerPeriode
 {

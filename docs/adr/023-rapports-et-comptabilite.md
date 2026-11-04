@@ -21,8 +21,22 @@
   crédit) ; caisse et collecte (gérant, comptable).
 - Tableau de bord : épargne, crédit, caisse et collecte, tontines et membres (chaque bloc selon les droits).
 
+## Décisions techniques
+
+- Lectures du grand livre par un service public du module Finance (`LecturesComptables`) : les modèles
+  Operation et Ecriture restent propres au module Finance (test d'architecture).
+- Clôture : demande unique en attente par organisation (colonne générée + UNIQUE), contrôles refaits à la
+  validation, puis clôture définitive jusqu'au dernier jour du mois. La commande console `finance:cloturer`
+  de la Phase 1 est retirée : plus de clôture sans validation du gérant.
+- Exports : table `exports`, travail `GenererExport` en file d'attente, exécuté dans l'organisation de son
+  auteur ; fichier sur le disque local (hors public), téléchargeable par son seul auteur. CSV au
+  point-virgule, UTF-8 avec BOM, formules neutralisées. Relevé : solde au jour précédent, mouvements avec
+  solde après chaque ligne, solde de fin, par date de valeur.
+- Application du membre : relevé de 1, 3 ou 12 mois demandé à l'API (202), puis téléchargé et ouvert.
+
 ## À confirmer
 
 - Les numéros SYSCOHADA proposés par défaut sont une **proposition à faire valider par le comptable**
   (classes 1 à 7 du SYSCOHADA révisé ; le plan propre aux institutions de microfinance de la BCC peut
   différer).
+- « Excel » remplacé par CSV (choix du 2026-11-04) : la case du plan parle encore d'exports PDF/Excel.

@@ -68,9 +68,10 @@ final class LecturesComptables
      *
      * @return LengthAwarePaginator<int, array{id: int, date: CarbonImmutable, type: string, motif: string|null, ecritures: list<array{compte_id: int, debit: int, credit: int}>}>
      */
-    public function journal(Devise $devise, CarbonImmutable $du, CarbonImmutable $au, int $parPage = 50): LengthAwarePaginator
+    public function journal(Devise $devise, CarbonImmutable $du, CarbonImmutable $au, int $parPage = 50, ?int $numeroPage = null): LengthAwarePaginator
     {
-        $page = $this->operations($devise, $du, $au)->with('ecritures')->orderBy('date_valeur')->orderBy('id')->paginate($parPage);
+        // Sans numéro : page de la requête (écran) ; avec : parcours complet (export).
+        $page = $this->operations($devise, $du, $au)->with('ecritures')->orderBy('date_valeur')->orderBy('id')->paginate($parPage, ['*'], 'page', $numeroPage);
 
         return $page->through(fn (Operation $o) => [
             'id' => $o->id,
