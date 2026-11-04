@@ -1,0 +1,202 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "ffb8bd4b84959624032576b7d2247e5e",
+    "entities": [
+      {
+        "tableName": "membres",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `numero` TEXT NOT NULL, `nom` TEXT NOT NULL, `donnees` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "numero",
+            "columnName": "numero",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nom",
+            "columnName": "nom",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "donnees",
+            "columnName": "donnees",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_membres_numero",
+            "unique": false,
+            "columnNames": [
+              "numero"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_membres_numero` ON `${TABLE_NAME}` (`numero`)"
+          },
+          {
+            "name": "index_membres_nom",
+            "unique": false,
+            "columnNames": [
+              "nom"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_membres_nom` ON `${TABLE_NAME}` (`nom`)"
+          }
+        ]
+      },
+      {
+        "tableName": "operations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cle` TEXT NOT NULL, `type` TEXT NOT NULL, `membreId` INTEGER NOT NULL, `membreNumero` TEXT NOT NULL, `membreNom` TEXT NOT NULL, `compteEpargneId` INTEGER, `pretId` INTEGER, `cycleId` INTEGER, `devise` TEXT NOT NULL, `montantCentimes` INTEGER NOT NULL, `fondsSocialCentimes` INTEGER, `parts` INTEGER, `libelle` TEXT NOT NULL, `saisiLe` TEXT NOT NULL, `numeroProvisoire` TEXT NOT NULL, `statut` TEXT NOT NULL, `raison` TEXT, `recuOfficiel` TEXT, PRIMARY KEY(`cle`))",
+        "fields": [
+          {
+            "fieldPath": "cle",
+            "columnName": "cle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "membreId",
+            "columnName": "membreId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "membreNumero",
+            "columnName": "membreNumero",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "membreNom",
+            "columnName": "membreNom",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "compteEpargneId",
+            "columnName": "compteEpargneId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "pretId",
+            "columnName": "pretId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cycleId",
+            "columnName": "cycleId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "devise",
+            "columnName": "devise",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "montantCentimes",
+            "columnName": "montantCentimes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fondsSocialCentimes",
+            "columnName": "fondsSocialCentimes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "parts",
+            "columnName": "parts",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "libelle",
+            "columnName": "libelle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "saisiLe",
+            "columnName": "saisiLe",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "numeroProvisoire",
+            "columnName": "numeroProvisoire",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "statut",
+            "columnName": "statut",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "raison",
+            "columnName": "raison",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "recuOfficiel",
+            "columnName": "recuOfficiel",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cle"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_operations_statut",
+            "unique": false,
+            "columnNames": [
+              "statut"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_operations_statut` ON `${TABLE_NAME}` (`statut`)"
+          },
+          {
+            "name": "index_operations_saisiLe",
+            "unique": false,
+            "columnNames": [
+              "saisiLe"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_operations_saisiLe` ON `${TABLE_NAME}` (`saisiLe`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ffb8bd4b84959624032576b7d2247e5e')"
+    ]
+  }
+}

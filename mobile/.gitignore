@@ -1,0 +1,10 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+.kotlin/
+# Configuration Firebase et clés de signature : jamais dans le dépôt.
+google-services.json
+*.jks
+*.keystore
