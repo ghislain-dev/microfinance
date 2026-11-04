@@ -38,4 +38,11 @@ enum Droit: string
     case MembresAccesMobile = 'membres.acces_mobile';
     case CollecteGerer = 'collecte.gerer';
     case CollecteSaisir = 'collecte.saisir';
+    case ComptaVoir = 'compta.voir';
+    case ComptaParametrer = 'compta.parametrer';
+    case ComptaCloturer = 'compta.cloturer';
+    case ComptaValiderCloture = 'compta.valider_cloture';
+    case RapportsReleve = 'rapports.releve';
+    case RapportsCredit = 'rapports.credit';
+    case RapportsCaisse = 'rapports.caisse';
 }

@@ -48,6 +48,14 @@ const MATRICE_PHASE_0 = [
     'membres.acces_mobile' => ['gerant', 'caissier'],
     'collecte.gerer' => ['gerant'],
     'collecte.saisir' => ['collecteur'],
+
+    'compta.voir' => ['gerant', 'comptable'],
+    'compta.parametrer' => ['comptable'],
+    'compta.cloturer' => ['comptable'],
+    'compta.valider_cloture' => ['gerant'],
+    'rapports.releve' => ['gerant', 'comptable', 'caissier'],
+    'rapports.credit' => ['gerant', 'comptable', 'agent_credit'],
+    'rapports.caisse' => ['gerant', 'comptable'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

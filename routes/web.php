@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Controllers\Web\CaisseController;
 use App\Http\Controllers\Web\ChangeController;
 use App\Http\Controllers\Web\CollecteController;
+use App\Http\Controllers\Web\ComptabiliteController;
 use App\Http\Controllers\Web\CompteEpargneController;
 use App\Http\Controllers\Web\CycleController;
 use App\Http\Controllers\Web\DemandeDecaissementController;
@@ -133,5 +134,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/versements', [VersementController::class, 'index'])->name('versements.index');
     Route::post('/versements', [VersementController::class, 'store'])->name('versements.store');
     Route::post('/versements/{versement}/valider', [VersementController::class, 'valider'])->whereNumber('versement')->name('versements.valider');
+    Route::get('/comptabilite/balance', [ComptabiliteController::class, 'balance'])->name('comptabilite.balance');
+    Route::get('/comptabilite/grand-livre', [ComptabiliteController::class, 'grandLivre'])->name('comptabilite.grand-livre');
+    Route::get('/comptabilite/journal', [ComptabiliteController::class, 'journal'])->name('comptabilite.journal');
+    Route::get('/comptabilite/plan', [ComptabiliteController::class, 'plan'])->name('comptabilite.plan');
+    Route::post('/comptabilite/plan', [ComptabiliteController::class, 'modifierPlan']);
     Route::get('/garanties/{garantie}/piece', [PretController::class, 'piece'])->whereNumber('garantie')->name('garanties.piece');
 });

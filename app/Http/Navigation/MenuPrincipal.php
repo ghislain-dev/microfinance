@@ -30,6 +30,7 @@ final class MenuPrincipal
             [new EntreeMenu('Produits d’épargne', 'epargne.types.index'), Droit::EpargneParametrer],
             [new EntreeMenu('Intérêts et ristournes', 'epargne.remunerations.index'), Droit::EpargneRemuneration],
             [new EntreeMenu('Produits de crédit', 'credit.produits.index'), Droit::CreditParametrer],
+            [new EntreeMenu('Comptabilité', 'comptabilite.balance'), Droit::ComptaVoir],
             [new EntreeMenu('Organisation', 'organisation.show'), Droit::OrganisationModifier],
             [new EntreeMenu('Agences', null), Droit::AgencesVoir],
             [new EntreeMenu('Utilisateurs', null), Droit::UtilisateursVoir],

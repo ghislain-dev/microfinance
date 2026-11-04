@@ -54,17 +54,19 @@ enum Role: string
                 Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::TontinesGerer,
                 Droit::CreditParametrer, Droit::CreditSaisir, Droit::CreditApprouverGerant, Droit::CreditDecaisser,
                 Droit::MembresAccesMobile, Droit::CollecteGerer,
+                Droit::ComptaVoir, Droit::ComptaValiderCloture, Droit::RapportsReleve, Droit::RapportsCredit, Droit::RapportsCaisse,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
                 Droit::OperationsValiderDecaissement, Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::CreditDecaisser,
+                Droit::ComptaVoir, Droit::ComptaParametrer, Droit::ComptaCloturer, Droit::RapportsReleve, Droit::RapportsCredit, Droit::RapportsCaisse,
             ],
             self::Caissier => [
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,
-                Droit::EpargneVirer, Droit::MembresAccesMobile,
+                Droit::EpargneVirer, Droit::MembresAccesMobile, Droit::RapportsReleve,
             ],
             self::Collecteur => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::CollecteSaisir],
-            self::AgentCredit => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::CreditSaisir],
+            self::AgentCredit => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::CreditSaisir, Droit::RapportsCredit],
             self::Comite => [Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::TontinesValider, Droit::CreditApprouverComite],
             self::Membre => [],
         };
