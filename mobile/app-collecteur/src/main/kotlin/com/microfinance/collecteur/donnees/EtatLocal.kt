@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.microfinance.modele.Montant
 import com.microfinance.reseau.ConfigurationApi
 import com.microfinance.reseau.ParametresCollecte
+import com.microfinance.securite.Chiffrement
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

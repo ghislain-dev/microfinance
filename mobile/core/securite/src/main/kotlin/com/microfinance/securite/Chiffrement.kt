@@ -1,4 +1,4 @@
-package com.microfinance.collecteur.donnees
+package com.microfinance.securite
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -8,14 +8,13 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import javax.inject.Inject
-import javax.inject.Singleton
 
-/** Chiffre le jeton d'accès avec une clé AES du Keystore Android (jamais exportable). */
-@Singleton
-class Chiffrement @Inject constructor() {
-    private val alias = "microfinance-collecteur"
-
+/**
+ * Chiffre le jeton d'accès avec une clé AES du Keystore Android (jamais exportable).
+ *
+ * @param alias nom de la clé dans le Keystore, propre à chaque application
+ */
+class Chiffrement(private val alias: String) {
     fun chiffrer(texte: String): String {
         val cipher = Cipher.getInstance(TRANSFORMATION).apply { init(Cipher.ENCRYPT_MODE, cle()) }
         val donnees = cipher.iv + cipher.doFinal(texte.toByteArray(Charsets.UTF_8))

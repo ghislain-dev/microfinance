@@ -3,6 +3,7 @@ package com.microfinance.collecteur.donnees
 import android.content.Context
 import androidx.room.Room
 import com.microfinance.reseau.ConfigurationApi
+import com.microfinance.securite.Chiffrement
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -27,5 +28,9 @@ abstract class ModuleCollecteur {
 
         @Provides
         fun horloge(): Clock = Clock.systemUTC()
+
+        @Provides
+        @Singleton
+        fun chiffrement(): Chiffrement = Chiffrement("microfinance-collecteur")
     }
 }

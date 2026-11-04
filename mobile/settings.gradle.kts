@@ -26,5 +26,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":core:modele")
 include(":core:reseau")
+include(":core:securite")
 include(":app-collecteur")
 include(":app-membre")
