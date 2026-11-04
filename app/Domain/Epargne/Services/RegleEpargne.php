@@ -6,6 +6,7 @@ namespace App\Domain\Epargne\Services;
 
 use App\Domain\Caisse\Models\SessionCaisse;
 use App\Domain\Caisse\StatutSession;
+use App\Domain\Epargne\Events\MouvementEpargneEnregistre;
 use App\Domain\Epargne\Exceptions\CompteEpargneRefuse;
 use App\Domain\Epargne\Models\CompteEpargne;
 use App\Domain\Epargne\Models\DemandeDecaissement;
@@ -128,6 +129,7 @@ final class RegleEpargne
             'auteur_id' => auth()->id(),
         ])->save();
         $this->recus->executer($mouvement, $compte);
+        MouvementEpargneEnregistre::dispatch($mouvement);
 
         return $mouvement;
     }

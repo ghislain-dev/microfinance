@@ -107,6 +107,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/seances/{seance}', [SeanceController::class, 'show'])->whereNumber('seance')->name('seances.show');
     Route::post('/seances/{seance}', [SeanceController::class, 'store'])->whereNumber('seance');
     Route::post('/organisation/logo', [OrganisationController::class, 'logo'])->name('organisation.logo');
+    Route::post('/organisation/rappels', [OrganisationController::class, 'rappels'])->name('organisation.rappels');
     Route::post('/epargne/seuils', [SeuilValidationController::class, 'store']);
 
     Route::get('/credit', [PretController::class, 'index'])->name('credit.index');

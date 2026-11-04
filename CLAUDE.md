@@ -159,7 +159,7 @@ Règles de dépendance entre modules :
 - [x] Remboursements (ordre : pénalités → intérêts → capital), retards, PAR 30/90
 
 ### Phase 5 — API et applications mobiles (≈ 3 semaines)
-- [ ] API `/api/v1` versionnée, Resources, documentation
+- [x] API `/api/v1` versionnée, Resources, documentation
 - [x] Endpoint de synchronisation par lots (idempotent, voir skill)
 - [ ] App membres : solde, cotisations, tour, échéances, notifications
 - [ ] App collecteurs : saisie hors-ligne SQLite, synchronisation, reçus

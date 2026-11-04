@@ -6,6 +6,7 @@ namespace App\Domain\Credit\Actions;
 
 use App\Domain\Credit\CreditRefuse;
 use App\Domain\Credit\Echeancier\CalculEcheancier;
+use App\Domain\Credit\Events\PretDecide;
 use App\Domain\Credit\Models\EcheancePret;
 use App\Domain\Credit\Models\Pret;
 use App\Domain\Credit\Services\EligibiliteCredit;
@@ -103,6 +104,7 @@ final class DecaisserPret
                 'compte_penalites_id' => $comptePenalites->id,
                 'operation_decaissement_id' => $operation->id,
             ])->save();
+            PretDecide::dispatch($pret, 'decaisse');
 
             return $pret;
         });

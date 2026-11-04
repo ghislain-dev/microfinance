@@ -48,6 +48,15 @@
   (ni le caissier qui a compté, ni le collecteur), puis une seule opération : compté au guichet, caisse du
   collecteur soldée, manquant en créance sur le collecteur, excédent en produit.
 
+- Notifications push (Firebase Cloud Messaging, API HTTP v1) derrière `EnvoyeurPush` : pilote `journal` par
+  défaut (n'envoie rien), `firebase` avec le compte de service (`PUSH_PILOTE`, `FIREBASE_PROJET`,
+  `FIREBASE_COMPTE_SERVICE`, fichier hors dépôt). Événements (validés le 2026-11-04) : opération sur l'épargne
+  (montant et solde du reçu), tour de tontine au démarrage du cycle puis la veille de la séance, décision sur
+  un prêt (approuvé, rejeté, décaissé), rappel d'échéance N jours avant (N fixé par l'organisation, vide = aucun).
+  Envoi en file d'attente, après validation des transactions ; clé par avis (aucun doublon) ; historique
+  `GET /membre/notifications` ; jeton déclaré invalide par Firebase oublié.
+- Documentation : `docs/api/openapi.json` (OpenAPI 3.1) ; un test échoue si une route `/api/v1` n'y figure pas.
+
 ## À confirmer
 
 - Une opération refusée à la synchronisation (ex. solde devenu insuffisant) a pu donner lieu à un échange

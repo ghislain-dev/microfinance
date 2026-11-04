@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Credit\Actions;
 
+use App\Domain\Credit\Events\PretDecide;
 use App\Domain\Credit\Models\Pret;
 use App\Domain\Credit\Models\SeuilCredit;
 use App\Domain\Credit\StatutPret;
@@ -35,6 +36,9 @@ final class DeciderPret
                 $pret->forceFill(['gerant_par_id' => $acteur->id, 'gerant_le' => now(), 'motif_decision' => $motif, 'statut' => StatutPret::Approuve]);
             }
             $pret->save();
+            if ($pret->statut === StatutPret::Approuve) {
+                PretDecide::dispatch($pret, 'approuve');
+            }
 
             return $pret;
         });
@@ -48,6 +52,7 @@ final class DeciderPret
             $pret = Pret::query()->whereKey($pret->id)->lockForUpdate()->firstOrFail();
             AutoriserDansOrganisation::autoriser($acteur, 'decider', $pret);
             $pret->forceFill(['rejete_par_id' => $acteur->id, 'motif_decision' => $motif, 'statut' => StatutPret::Rejete])->save();
+            PretDecide::dispatch($pret, 'rejete');
 
             return $pret;
         });

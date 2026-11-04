@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Auth\MotDePasseController;
 use App\Http\Controllers\Api\V1\Collecte\SynchronisationController;
 use App\Http\Controllers\Api\V1\Collecte\TourneeController;
 use App\Http\Controllers\Api\V1\Membre\EspaceMembreController;
+use App\Http\Controllers\Api\V1\Membre\NotificationsController;
 use App\Http\Middleware\AppareilAutorise;
 use App\Http\Middleware\MotDePasseAChanger;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/comptes/{compte}/mouvements', [EspaceMembreController::class, 'mouvements'])->whereNumber('compte');
             Route::get('/prets', [EspaceMembreController::class, 'prets']);
             Route::get('/tontines', [EspaceMembreController::class, 'tontines']);
+            Route::get('/notifications', [NotificationsController::class, 'index']);
+            Route::post('/notifications/jeton', [NotificationsController::class, 'jeton']);
         });
 
         // Collecte : jeton « collecteur » d'un téléphone autorisé.

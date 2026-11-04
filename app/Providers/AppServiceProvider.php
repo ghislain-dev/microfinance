@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Credit\Events\PretDecide;
+use App\Domain\Epargne\Events\MouvementEpargneEnregistre;
+use App\Domain\Notifications\Listeners\NotifierLesMembres;
+use App\Domain\Tontines\Events\CycleDemarre;
 use App\Http\Controllers\Web\Auth\ConnexionController;
 use App\Http\Navigation\MenuPrincipal;
 use App\Models\User;
+use App\Support\Push\EnvoyeurPush;
+use App\Support\Push\FirebasePush;
+use App\Support\Push\JournalPush;
 use App\Support\Sms\CanalSms;
 use App\Support\Sms\EnvoyeurSms;
 use App\Support\Sms\JournalSms;
@@ -37,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Remplacer JournalSms par le fournisseur choisi le moment venu.
         $this->app->bind(EnvoyeurSms::class, JournalSms::class);
+        $this->app->bind(EnvoyeurPush::class, fn () => config('push.pilote') === 'firebase'
+            ? new FirebasePush((string) config('push.firebase.projet'), (string) config('push.firebase.compte_service'))
+            : new JournalPush);
     }
 
     /**
@@ -46,6 +56,11 @@ class AppServiceProvider extends ServiceProvider
     {
         // Hors production : pas de chargement paresseux (N+1), pas d'attribut ignoré ou inexistant.
         Model::shouldBeStrict(! $this->app->isProduction());
+
+        // Notifications push des membres (ADR 022), après validation des transactions.
+        Event::listen(MouvementEpargneEnregistre::class, [NotifierLesMembres::class, 'mouvement']);
+        Event::listen(CycleDemarre::class, [NotifierLesMembres::class, 'cycle']);
+        Event::listen(PretDecide::class, [NotifierLesMembres::class, 'pret']);
 
         // Rôles et permissions évalués dans l'organisation de l'utilisateur connecté (spatie « teams »).
         Event::listen(Authenticated::class, function (Authenticated $evenement) {

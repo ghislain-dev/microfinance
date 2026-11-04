@@ -1,0 +1,1184 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API microfinance v1",
+    "version": "1.0.0",
+    "description": "API des applications mobiles (membres et collecteurs). Montants toujours en **centimes entiers** avec leur devise (jamais de nombre à virgule). Le serveur est la seule source de vérité : il recalcule soldes et disponibilités, et relit comptes et devises en base. Réponses JSON, erreurs sans trace technique. Voir ADR 005 et 022."
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "security": [
+    {
+      "jeton": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "jeton": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Jeton Sanctum. Capacités : `membre`, `collecteur` (lié à un téléphone autorisé) ou `personnel`."
+      }
+    },
+    "schemas": {
+      "Montant": {
+        "type": "object",
+        "properties": {
+          "centimes": {
+            "type": "integer",
+            "description": "Montant en unité mineure (1/100)"
+          },
+          "devise": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "CDF"
+            ]
+          },
+          "texte": {
+            "type": "string",
+            "description": "Montant formaté, ex. « 1 250,50 USD »"
+          }
+        },
+        "required": [
+          "centimes",
+          "devise",
+          "texte"
+        ]
+      },
+      "Jeton": {
+        "type": "object",
+        "properties": {
+          "jeton": {
+            "type": "string"
+          },
+          "expire_le": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ResultatOperation": {
+        "type": "object",
+        "properties": {
+          "cle": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "statut": {
+            "type": "string",
+            "enum": [
+              "cree",
+              "deja_traite",
+              "rejete"
+            ]
+          },
+          "raison": {
+            "type": "string"
+          },
+          "operation_id": {
+            "type": "integer"
+          },
+          "recu": {
+            "type": "string",
+            "description": "Numéro du reçu officiel (dépôts, retraits)"
+          }
+        },
+        "required": [
+          "cle",
+          "statut"
+        ]
+      },
+      "OperationCollecte": {
+        "type": "object",
+        "properties": {
+          "cle": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Générée au téléphone à la saisie ; rejouable sans doublon"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "depot",
+              "retrait",
+              "cotisation",
+              "remboursement"
+            ]
+          },
+          "membre_id": {
+            "type": "integer"
+          },
+          "compte_epargne_id": {
+            "type": "integer",
+            "description": "depot, retrait"
+          },
+          "pret_id": {
+            "type": "integer",
+            "description": "remboursement"
+          },
+          "cycle_id": {
+            "type": "integer",
+            "description": "cotisation (prochaine séance prévue)"
+          },
+          "montant_centimes": {
+            "type": "integer"
+          },
+          "fonds_social_centimes": {
+            "type": "integer",
+            "description": "cotisation"
+          },
+          "parts": {
+            "type": "integer",
+            "description": "cotisation AVEC : 1 à parts_max"
+          },
+          "saisi_le": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Heure du téléphone, pour information et pour l'ordre de traitement"
+          }
+        },
+        "required": [
+          "cle",
+          "type"
+        ]
+      }
+    },
+    "responses": {
+      "Validation": {
+        "description": "Données invalides",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "errors": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/jetons": {
+      "post": {
+        "summary": "Jeton du personnel (mot de passe + OTP)",
+        "description": "1er appel sans `code` : vérifie le mot de passe et envoie un code (202). 2e appel avec le code : jeton (201). Un collecteur doit envoyer `appareil_id` (UUID du téléphone) : téléphone inconnu → enregistré en attente, 403 `appareil_en_attente` ; révoqué → 403 `appareil_revoque`. 5 essais par minute.",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "202": {
+            "description": "Code envoyé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statut": {
+                      "type": "string",
+                      "enum": [
+                        "code_requis"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Jeton délivré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Jeton"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Téléphone du collecteur en attente ou révoqué"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "appareil": {
+                    "type": "string",
+                    "description": "Libellé du téléphone"
+                  },
+                  "appareil_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "Code OTP"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password",
+                  "appareil"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/membre": {
+      "post": {
+        "summary": "Jeton d'un membre",
+        "description": "Code de l'organisation + numéro de membre + mot de passe remis au guichet. `doit_changer_mot_de_passe` : tant qu'il vaut vrai, seule `/moi/mot-de-passe` répond. 5 essais par minute.",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "201": {
+            "description": "Jeton délivré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jeton": {
+                      "type": "string"
+                    },
+                    "expire_le": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "doit_changer_mot_de_passe": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organisation": {
+                    "type": "string"
+                  },
+                  "numero": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "appareil": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "organisation",
+                  "numero",
+                  "password",
+                  "appareil"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/deconnexion": {
+      "post": {
+        "summary": "Révoque le jeton courant",
+        "description": "",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "204": {
+            "description": "Jeton révoqué"
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        }
+      }
+    },
+    "/moi": {
+      "get": {
+        "summary": "Utilisateur connecté",
+        "description": "",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "nom": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "telephone": {
+                          "type": "string"
+                        },
+                        "organisation_id": {
+                          "type": "integer"
+                        },
+                        "roles": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        }
+      }
+    },
+    "/moi/mot-de-passe": {
+      "post": {
+        "summary": "Change son mot de passe",
+        "description": "Obligatoire après un mot de passe provisoire. 8 caractères au moins, lettres et chiffres.",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "204": {
+            "description": "Mot de passe changé"
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "actuel": {
+                    "type": "string"
+                  },
+                  "nouveau": {
+                    "type": "string"
+                  },
+                  "nouveau_confirmation": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "actuel",
+                  "nouveau",
+                  "nouveau_confirmation"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appareils": {
+      "get": {
+        "summary": "Ses jetons actifs",
+        "description": "",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste paginée"
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        }
+      }
+    },
+    "/appareils/{id}": {
+      "delete": {
+        "summary": "Révoque un de ses jetons",
+        "description": "Le jeton d'un autre utilisateur donne 404.",
+        "tags": [
+          "Authentification"
+        ],
+        "responses": {
+          "204": {
+            "description": "Révoqué"
+          },
+          "404": {
+            "description": "Inconnu"
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/membre/comptes": {
+      "get": {
+        "summary": "Comptes d'épargne du membre",
+        "description": "Capacité `membre`. Solde, montant bloqué (garantie de prêt) et disponible, calculés par le serveur.",
+        "tags": [
+          "Membre"
+        ],
+        "responses": {
+          "200": {
+            "description": "Comptes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "numero": {
+                            "type": "string"
+                          },
+                          "produit": {
+                            "type": "string"
+                          },
+                          "devise": {
+                            "type": "string"
+                          },
+                          "solde": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "bloque": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "disponible": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "bloque_jusqu_au": {
+                            "type": "string",
+                            "format": "date"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        }
+      }
+    },
+    "/membre/comptes/{compte}/mouvements": {
+      "get": {
+        "summary": "Mouvements d'un compte du membre",
+        "description": "Pagination par curseur (50). Le compte d'un autre membre donne 404.",
+        "tags": [
+          "Membre"
+        ],
+        "responses": {
+          "200": {
+            "description": "Mouvements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "libelle": {
+                            "type": "string"
+                          },
+                          "montant": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "frais": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "recu": {
+                            "type": "string"
+                          },
+                          "le": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "parameters": [
+          {
+            "name": "compte",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "depuis",
+            "in": "query",
+            "required": false,
+            "description": "Horodatage ISO 8601 : seulement les éléments créés ou modifiés après.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ]
+      }
+    },
+    "/membre/prets": {
+      "get": {
+        "summary": "Prêts du membre et leurs échéances",
+        "description": "",
+        "tags": [
+          "Membre"
+        ],
+        "responses": {
+          "200": {
+            "description": "Prêts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "numero": {
+                            "type": "string"
+                          },
+                          "statut": {
+                            "type": "string"
+                          },
+                          "statut_libelle": {
+                            "type": "string"
+                          },
+                          "montant": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "taux_mensuel": {
+                            "type": "string"
+                          },
+                          "date_decaissement": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "reste_du": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "echeances": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "rang": {
+                                  "type": "integer"
+                                },
+                                "date": {
+                                  "type": "string",
+                                  "format": "date"
+                                },
+                                "capital": {
+                                  "$ref": "#/components/schemas/Montant"
+                                },
+                                "interet": {
+                                  "$ref": "#/components/schemas/Montant"
+                                },
+                                "penalite": {
+                                  "$ref": "#/components/schemas/Montant"
+                                },
+                                "paye": {
+                                  "$ref": "#/components/schemas/Montant"
+                                },
+                                "reste_du": {
+                                  "$ref": "#/components/schemas/Montant"
+                                },
+                                "payee": {
+                                  "type": "boolean"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        }
+      }
+    },
+    "/membre/tontines": {
+      "get": {
+        "summary": "Tontines en cours du membre",
+        "description": "Prochaine séance, son tour (rang et date), sa dette envers le cycle.",
+        "tags": [
+          "Membre"
+        ],
+        "responses": {
+          "200": {
+            "description": "Cycles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "cycle_id": {
+                            "type": "integer"
+                          },
+                          "groupe": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "type": "string"
+                              },
+                              "nom": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "numero": {
+                            "type": "integer"
+                          },
+                          "periodicite": {
+                            "type": "string"
+                          },
+                          "cotisation": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "fonds_social": {
+                            "$ref": "#/components/schemas/Montant"
+                          },
+                          "prochaine_seance": {
+                            "type": "object",
+                            "properties": {
+                              "rang": {
+                                "type": "integer"
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date"
+                              }
+                            }
+                          },
+                          "mon_tour": {
+                            "type": "object",
+                            "properties": {
+                              "rang": {
+                                "type": "integer"
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date"
+                              }
+                            }
+                          },
+                          "dette": {
+                            "$ref": "#/components/schemas/Montant"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        }
+      }
+    },
+    "/membre/notifications": {
+      "get": {
+        "summary": "Historique des notifications du membre",
+        "description": "Pagination par curseur (`suivant`).",
+        "tags": [
+          "Membre"
+        ],
+        "responses": {
+          "200": {
+            "description": "Notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "titre": {
+                            "type": "string"
+                          },
+                          "corps": {
+                            "type": "string"
+                          },
+                          "donnees": {
+                            "type": "object"
+                          },
+                          "le": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    },
+                    "suivant": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "parameters": [
+          {
+            "name": "depuis",
+            "in": "query",
+            "required": false,
+            "description": "Horodatage ISO 8601 : seulement les éléments créés ou modifiés après.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ]
+      }
+    },
+    "/membre/notifications/jeton": {
+      "post": {
+        "summary": "Enregistre le jeton Firebase du téléphone",
+        "description": "",
+        "tags": [
+          "Membre"
+        ],
+        "responses": {
+          "204": {
+            "description": "Enregistré"
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jeton": {
+                    "type": "string"
+                  },
+                  "plateforme": {
+                    "type": "string",
+                    "enum": [
+                      "android"
+                    ]
+                  }
+                },
+                "required": [
+                  "jeton",
+                  "plateforme"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collecte/tournee": {
+      "get": {
+        "summary": "Tournée du collecteur",
+        "description": "Capacité `collecteur`, téléphone autorisé. Avec `depuis` : seulement les membres modifiés et `membres_retires`. `parametres` vaut null tant que le gérant ne les a pas fixés : aucune saisie possible.",
+        "tags": [
+          "Collecte"
+        ],
+        "responses": {
+          "200": {
+            "description": "Tournée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "serveur_le": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "À renvoyer comme `depuis` à la synchronisation suivante"
+                    },
+                    "parametres": {
+                      "type": "object",
+                      "properties": {
+                        "delai_max_heures": {
+                          "type": "integer"
+                        },
+                        "plafonds": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "plafond_retrait": {
+                                "$ref": "#/components/schemas/Montant"
+                              },
+                              "plafond_especes": {
+                                "$ref": "#/components/schemas/Montant"
+                              },
+                              "seuil_validation": {
+                                "$ref": "#/components/schemas/Montant"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "especes_detenues": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "#/components/schemas/Montant"
+                      }
+                    },
+                    "membres": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "membres_retires": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "parameters": [
+          {
+            "name": "depuis",
+            "in": "query",
+            "required": false,
+            "description": "Horodatage ISO 8601 : seulement les éléments créés ou modifiés après.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ]
+      }
+    },
+    "/sync/lots": {
+      "post": {
+        "summary": "Synchronisation d'un lot d'opérations hors-ligne",
+        "description": "Capacité `collecteur`, téléphone autorisé. Opérations traitées dans l'ordre de `saisi_le`, chacune seule : un refus n'annule pas les autres. Une clé déjà reçue répond `deja_traite` (ou le même refus). Retrait : au plus le plafond hors-ligne et jamais au-delà du seuil de validation. Cotisation : pour la prochaine séance prévue du cycle.",
+        "tags": [
+          "Collecte"
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultat par opération",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lot_uuid": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "resultats": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ResultatOperation"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Jeton absent, expiré ou révoqué"
+          },
+          "403": {
+            "description": "Capacité du jeton insuffisante, téléphone non autorisé (`code: appareil_non_autorise`) ou mot de passe provisoire à changer (`code: mot_de_passe_a_changer`)"
+          },
+          "422": {
+            "$ref": "#/components/responses/Validation"
+          },
+          "429": {
+            "description": "Trop de requêtes"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lot_uuid": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "operations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 500,
+                    "items": {
+                      "$ref": "#/components/schemas/OperationCollecte"
+                    }
+                  }
+                },
+                "required": [
+                  "lot_uuid",
+                  "operations"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

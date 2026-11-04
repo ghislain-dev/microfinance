@@ -9,6 +9,7 @@ use App\Domain\Finance\Comptes\NatureCompte;
 use App\Domain\Finance\LigneEcriture;
 use App\Domain\Finance\MoteurFinancier;
 use App\Domain\Membres\StatutMembre;
+use App\Domain\Tontines\Events\CycleDemarre;
 use App\Domain\Tontines\Models\Cycle;
 use App\Domain\Tontines\Models\Groupe;
 use App\Domain\Tontines\Models\Seance;
@@ -86,6 +87,7 @@ final class DemarrerCycle
 
                 $this->fixerTours($cycle, $participants, $ordre);
                 $this->reporterFondsSocial($groupe, $cycle);
+                CycleDemarre::dispatch($cycle);
 
                 return $cycle;
             });

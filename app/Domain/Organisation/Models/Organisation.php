@@ -53,6 +53,7 @@ class Organisation extends Model
     {
         return [
             'actif' => 'boolean',
+            'rappel_echeance_jours' => 'integer',
         ];
     }
 }
