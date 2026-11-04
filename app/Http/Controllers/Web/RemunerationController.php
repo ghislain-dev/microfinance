@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
 use App\Support\Montant\MontantSaisi;
+use App\Support\Temps\Horloge;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -41,7 +42,7 @@ class RemunerationController extends Controller
         return view('remunerations.index', [
             'lots' => Remuneration::query()->with(['creePar:id,name', 'decidePar:id,name'])->latest('id')->paginate(25),
             'excedents' => $excedents,
-            'moisEcoule' => today()->subMonthNoOverflow()->format('Y-m'),
+            'moisEcoule' => Horloge::aujourdhui()->subMonthNoOverflow()->format('Y-m'),
         ]);
     }
 

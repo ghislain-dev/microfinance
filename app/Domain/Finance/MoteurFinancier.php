@@ -20,6 +20,7 @@ use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Audit\JournalAudit;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -55,15 +56,17 @@ final class MoteurFinancier
         }
 
         $devise = $this->verifierEquilibre($lignes);
-        $dateValeur = CarbonImmutable::parse(($dateValeur ?? today())->toDateString());
+        $dateDemandee = $dateValeur === null ? null : CarbonImmutable::parse($dateValeur->toDateString());
 
         try {
-            return DB::transaction(function () use ($cle, $type, $lignes, $devise, $dateValeur, $motif, $extourneDe, $validateur) {
+            return DB::transaction(function () use ($cle, $type, $lignes, $devise, $dateDemandee, $motif, $extourneDe, $validateur) {
                 $ids = collect($lignes)->pluck('compteId')->unique()->sort()->values();
                 // Ordre fixe des verrous : pas d'interblocage entre deux opérations concurrentes.
                 $comptes = Compte::query()->whereKey($ids->all())->orderBy('id')->lockForUpdate()->get()->keyBy('id');
 
                 $organisationId = $this->verifierComptes($comptes, $ids->all(), $devise);
+                // Par défaut, le jour local de l'organisation (ADR 024), pas le jour UTC du serveur.
+                $dateValeur = $dateDemandee ?? Horloge::aujourdhui($organisationId);
                 $this->verifierPeriodeOuverte($organisationId, $dateValeur);
                 $mouvements = $this->mouvements($comptes, $lignes);
                 $this->verifierDecouvert($comptes, $mouvements);

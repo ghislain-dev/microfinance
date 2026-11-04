@@ -8,8 +8,8 @@
         <span @class(['badge', 'text-bg-success' => $session->statut === App\Domain\Caisse\StatutSession::Ouverte,
                       'text-bg-warning' => $session->statut->attendValidation(),
                       'text-bg-secondary' => $session->statut === App\Domain\Caisse\StatutSession::Fermee])>{{ $session->statut->libelle() }}</span>
-        <span class="text-body-secondary ms-2">ouverte le {{ $session->ouverte_le->format('d/m/Y H:i') }}
-            @if ($session->fermee_le) · fermée le {{ $session->fermee_le->format('d/m/Y H:i') }} @endif</span>
+        <span class="text-body-secondary ms-2">ouverte le {{ App\Support\Temps\Horloge::affiche($session->ouverte_le) }}
+            @if ($session->fermee_le) · fermée le {{ App\Support\Temps\Horloge::affiche($session->fermee_le) }} @endif</span>
     </p>
 
     @if (session('statut'))

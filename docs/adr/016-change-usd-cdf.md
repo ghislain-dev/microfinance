@@ -28,4 +28,4 @@
 
 - La conversion est faite par les rôles du virement (caissier, gérant) avec ses règles (membre actif,
   compte non bloqué, solde minimum) ; pas de seuil de validation (l'argent reste au membre).
-- « Aujourd'hui » suit le fuseau de l'application (UTC) : le fuseau des organisations reste à décider.
+- « Aujourd'hui » suit désormais le fuseau de l'organisation (ADR 024).

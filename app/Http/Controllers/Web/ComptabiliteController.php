@@ -11,6 +11,7 @@ use App\Domain\Comptabilite\Services\EtatsComptables;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Support\Montant\Devise;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -84,7 +85,7 @@ class ComptabiliteController extends Controller
             'du' => ['nullable', 'date_format:Y-m-d'],
             'au' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:du'],
         ]);
-        $du = isset($donnees['du']) ? CarbonImmutable::parse($donnees['du']) : CarbonImmutable::today()->startOfMonth();
+        $du = isset($donnees['du']) ? CarbonImmutable::parse($donnees['du']) : Horloge::aujourdhui()->startOfMonth();
 
         return [
             Devise::from($donnees['devise'] ?? Devise::USD->value),

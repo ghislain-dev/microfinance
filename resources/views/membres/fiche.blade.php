@@ -30,7 +30,7 @@
                 {{-- Numéro de pièce masqué : seuls les 4 derniers caractères sont affichés. --}}
                 <dt class="col-sm-3">Pièce d’identité</dt><dd class="col-sm-9">{{ $membre->piece_type }} · ••••{{ mb_substr($membre->piece_numero, -4) }}</dd>
                 <dt class="col-sm-3">Adresse</dt><dd class="col-sm-9">{{ $membre->adresse ?? '—' }}</dd>
-                <dt class="col-sm-3">Inscrit le</dt><dd class="col-sm-9 mb-0">{{ $membre->created_at?->format('d/m/Y') }}</dd>
+                <dt class="col-sm-3">Inscrit le</dt><dd class="col-sm-9 mb-0">{{ App\Support\Temps\Horloge::affiche($membre->created_at, 'd/m/Y') }}</dd>
             </dl>
         </div>
     </div>

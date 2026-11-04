@@ -11,6 +11,7 @@ use App\Domain\Finance\Models\ClotureComptable;
 use App\Domain\Organisation\Models\Organisation;
 use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
 
@@ -25,7 +26,7 @@ final class DemanderCloture
     {
         AutoriserDansOrganisation::autoriser($comptable, 'cloturer', DemandeCloture::class);
         $fin = $mois->endOfMonth()->startOfDay();
-        if (! $fin->isBefore(CarbonImmutable::today())) {
+        if (! $fin->isBefore(Horloge::aujourdhui($comptable->organisation_id))) {
             throw new ClotureRefusee('Seul un mois terminé peut être clôturé.');
         }
         $derniere = ClotureComptable::query()->max('date_fin');

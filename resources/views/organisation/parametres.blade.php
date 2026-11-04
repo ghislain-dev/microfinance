@@ -20,6 +20,24 @@
         <div class="mt-3"><button type="submit" class="btn btn-primary">Envoyer</button></div>
     </form>
 
+    <form method="POST" action="{{ route('organisation.fuseau') }}" class="card card-body mt-4">
+        @csrf
+        <h2 class="h6">Fuseau horaire</h2>
+        <p class="small text-body-secondary mb-2">Fixe le « jour » des opérations, du taux de change, des échéances, des rappels et des clôtures.</p>
+        <div class="d-flex gap-2">
+            <select name="fuseau" aria-label="Fuseau horaire" @class(['form-select w-auto', 'is-invalid' => $errors->has('fuseau')])>
+                @foreach (['Africa/Kinshasa' => 'Kinshasa (UTC+1)', 'Africa/Lubumbashi' => 'Lubumbashi (UTC+2)'] as $code => $libelle)
+                    <option value="{{ $code }}" @selected($organisation->getAttribute('fuseau') === $code)>{{ $libelle }}</option>
+                @endforeach
+                @unless (in_array($organisation->getAttribute('fuseau'), ['Africa/Kinshasa', 'Africa/Lubumbashi'], true))
+                    <option value="{{ $organisation->getAttribute('fuseau') }}" selected>{{ $organisation->getAttribute('fuseau') }}</option>
+                @endunless
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Enregistrer</button>
+        </div>
+        @error('fuseau') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+    </form>
+
     <form method="POST" action="{{ route('organisation.rappels') }}" class="card card-body mt-4">
         @csrf
         <h2 class="h6">Rappels aux membres (application mobile)</h2>

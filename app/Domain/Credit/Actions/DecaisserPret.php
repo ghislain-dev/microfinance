@@ -23,9 +23,9 @@ use App\Domain\Membres\Models\Membre;
 use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Montant\Montant;
+use App\Support\Temps\Horloge;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -83,7 +83,7 @@ final class DecaisserPret
                 $this->blocages->bloquer($compte, $garantie, "pret:{$pret->id}", "Garantie du prêt {$pret->numero}");
             }
 
-            $aujourdhui = CarbonImmutable::today();
+            $aujourdhui = Horloge::aujourdhui($pret->organisation_id);
             foreach (CalculEcheancier::calculer($pret->montant, $pret->taux_mensuel_pb, $pret->nombre_echeances,
                 $pret->periodicite, $pret->methode, $aujourdhui) as $prevue) {
                 $zero = Montant::zero($pret->devise);

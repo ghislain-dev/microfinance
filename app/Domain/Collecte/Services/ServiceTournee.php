@@ -26,6 +26,7 @@ use App\Http\Resources\MontantJson;
 use App\Models\User;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -181,7 +182,7 @@ final class ServiceTournee
     private function pret(Pret $pret): array
     {
         $zero = Montant::zero($pret->devise);
-        $aujourdhui = CarbonImmutable::today();
+        $aujourdhui = Horloge::aujourdhui();
 
         return [
             'id' => $pret->id,

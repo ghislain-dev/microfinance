@@ -44,8 +44,8 @@
                 <tbody>
                     @forelse ($rejets as $rejet)
                         <tr>
-                            <td>{{ $rejet->created_at?->format('d/m/Y H:i') }}</td>
-                            <td>{{ $rejet->getAttribute('saisi_le')?->format('d/m/Y H:i') }}</td>
+                            <td>{{ App\Support\Temps\Horloge::affiche($rejet->created_at) }}</td>
+                            <td>{{ App\Support\Temps\Horloge::affiche($rejet->getAttribute('saisi_le')) }}</td>
                             <td>{{ $rejet->getAttribute('type') }}</td>
                             <td>{{ $rejet->getAttribute('membre_id') }}</td>
                             <td>{{ $rejet->raison }}</td>
@@ -68,7 +68,7 @@
                         @forelse ($appareils[$collecteur->id] ?? [] as $appareil)
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>{{ $appareil->modele }} — {{ $appareil->libelleStatut() }}
-                                    @if ($appareil->derniere_sync_le) · synchro {{ $appareil->derniere_sync_le->format('d/m H:i') }} @endif</span>
+                                    @if ($appareil->derniere_sync_le) · synchro {{ App\Support\Temps\Horloge::affiche($appareil->derniere_sync_le, 'd/m H:i') }} @endif</span>
                                 @if ($appareil->statut !== 'autorise')
                                     <form method="POST" action="{{ route('collecte.appareil', [$appareil, 'autoriser']) }}">@csrf<button type="submit" class="btn btn-success btn-sm">Autoriser</button></form>
                                 @else

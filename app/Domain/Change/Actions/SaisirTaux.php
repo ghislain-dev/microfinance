@@ -8,6 +8,7 @@ use App\Domain\Change\Models\TauxChange;
 use App\Domain\Change\Taux;
 use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
+use App\Support\Temps\Horloge;
 use InvalidArgumentException;
 
 /**
@@ -25,7 +26,7 @@ final class SaisirTaux
         $taux = new TauxChange;
         $taux->forceFill([
             'organisation_id' => $acteur->organisation_id,
-            'date_application' => today()->toDateString(),
+            'date_application' => Horloge::aujourdhui($acteur->organisation_id)->toDateString(),
             'achat' => $achat->millioniemes,
             'vente' => $vente->millioniemes,
             'saisi_par_id' => $acteur->id,

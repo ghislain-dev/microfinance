@@ -85,7 +85,7 @@ it('rembourse une échéance en espèces : intérêts puis capital, caisse créd
 it('constate les pénalités chaque jour après le délai de grâce, sur le capital impayé, une seule fois par jour', function () {
     [$c, $pret] = pretEnCours();
 
-    travelTo('2026-02-18 23:00'); // échéance du 15 + 3 jours de grâce : pas encore en retard
+    travelTo('2026-02-18 21:00'); // 22 h à Kinshasa : échéance du 15 + 3 jours de grâce, pas encore en retard
     constaterPenalites($c);
     expect(echeance($pret, 1)->penalite->formate())->toBe('0,00 USD');
 

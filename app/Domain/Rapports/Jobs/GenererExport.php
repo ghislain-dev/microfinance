@@ -10,6 +10,7 @@ use App\Domain\Rapports\Services\EcrivainCsv;
 use App\Domain\Rapports\Services\EcrivainPdf;
 use App\Domain\Rapports\Services\FabriqueTableaux;
 use App\Models\User;
+use App\Support\Temps\Horloge;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +49,7 @@ final class GenererExport implements ShouldQueue
             Storage::disk('local')->put($chemin, $contenu);
             $export->forceFill([
                 'statut' => 'pret', 'chemin' => $chemin,
-                'nom_fichier' => Str::slug($export->libelle()).'-'.now()->format('Ymd-His').".{$export->format}",
+                'nom_fichier' => Str::slug($export->libelle()).'-'.Horloge::local(now(), $export->organisation_id)->format('Ymd-His').".{$export->format}",
             ])->save();
         } catch (Throwable $e) {
             $export->forceFill(['statut' => 'echec', 'erreur' => mb_substr($e->getMessage(), 0, 500)])->save();

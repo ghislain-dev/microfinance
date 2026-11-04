@@ -9,6 +9,7 @@ use App\Domain\Change\Taux;
 use App\Models\User;
 use App\Support\BaseDeDonnees\EnInsertionSeule;
 use App\Support\MultiOrganisation\AppartientAOrganisation;
+use App\Support\Temps\Horloge;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -44,7 +45,7 @@ class TauxChange extends Model
      */
     public static function duJour(): ?self
     {
-        return self::query()->whereDate('date_application', today())->latest('id')->first();
+        return self::query()->whereDate('date_application', Horloge::aujourdhui()->toDateString())->latest('id')->first();
     }
 
     /**

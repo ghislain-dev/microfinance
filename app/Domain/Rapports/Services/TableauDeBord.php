@@ -34,7 +34,7 @@ use App\Models\User;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
 use App\Support\Montant\Pourcentage;
-use Carbon\CarbonImmutable;
+use App\Support\Temps\Horloge;
 
 /**
  * Indicateurs du tableau de bord (ADR 023), un bloc par domaine selon les droits de l'utilisateur.
@@ -76,13 +76,13 @@ final class TableauDeBord
     private function epargne(): array
     {
         $lignes = ['Comptes d’épargne : '.CompteEpargne::query()->count()];
-        $aujourdhui = CarbonImmutable::today();
+        $debutDuJour = Horloge::debutDuJour();
         foreach (Devise::cases() as $devise) {
             $comptes = Compte::query()->where('nature', NatureCompte::Epargne->value)->where('devise', $devise->value)->pluck('id')->all();
             $totaux = array_intersect_key($this->lectures->totauxParCompte($devise, null, null), array_flip($comptes));
             $total = new Montant(array_sum(array_column($totaux, 'credit')) - array_sum(array_column($totaux, 'debit')), $devise);
             $jour = fn (string $type) => new Montant((int) MouvementEpargne::query()->where('devise', $devise->value)->where('type', $type)
-                ->where('created_at', '>=', $aujourdhui->startOfDay())->sum('montant'), $devise);
+                ->where('created_at', '>=', $debutDuJour)->sum('montant'), $devise);
             $lignes[] = "Épargne totale {$devise->value} : {$total->formate()}";
             $lignes[] = "Dépôts du jour : {$jour('depot')->formate()} · retraits du jour : {$jour('retrait')->formate()}";
         }
@@ -95,7 +95,7 @@ final class TableauDeBord
      */
     private function credit(): array
     {
-        $aujourdhui = CarbonImmutable::today();
+        $aujourdhui = Horloge::aujourdhui();
         $lignes = [];
         foreach (Devise::cases() as $devise) {
             $par30 = $this->indicateurs->par(30, $devise);
@@ -139,7 +139,7 @@ final class TableauDeBord
         return [
             'Membres actifs : '.Membre::query()->where('statut', StatutMembre::Actif->value)->count(),
             'Cycles de tontine en cours : '.Cycle::query()->where('statut', StatutCycle::EnCours->value)->count(),
-            'Séances du jour : '.Seance::query()->where('statut', StatutSeance::Prevue->value)->whereDate('date_prevue', CarbonImmutable::today()->toDateString())->count(),
+            'Séances du jour : '.Seance::query()->where('statut', StatutSeance::Prevue->value)->whereDate('date_prevue', Horloge::aujourdhui()->toDateString())->count(),
             'Prêts au comité : '.Pret::query()->where('statut', StatutPret::Soumis->value)->count()
                 .' · au gérant : '.Pret::query()->where('statut', StatutPret::AttenteGerant->value)->count(),
             'Aides et partages au comité : '.(Aide::query()->where('statut', 'en_attente')->count() + Partage::query()->where('statut', 'brouillon')->count()),

@@ -51,7 +51,7 @@
                 <tbody>
                     @forelse ($versements as $v)
                         <tr>
-                            <td>{{ $v->created_at?->format('d/m/Y H:i') }}</td>
+                            <td>{{ App\Support\Temps\Horloge::affiche($v->created_at) }}</td>
                             <td>{{ $v->collecteur->name }}</td>
                             <td class="text-end">{{ $v->theorique->formate() }}</td>
                             <td class="text-end">{{ $v->compte->formate() }}</td>

@@ -25,7 +25,7 @@
                 <dl class="card-body row mb-0 small">
                     <dt class="col-5">Objet</dt><dd class="col-7">{{ $pret->objet }}</dd>
                     <dt class="col-5">Compte d’épargne</dt><dd class="col-7">{{ $pret->compteEpargne->numero }}</dd>
-                    <dt class="col-5">Saisi par</dt><dd class="col-7">{{ $acteurs[$pret->saisi_par_id] ?? '—' }}, le {{ $pret->created_at?->format('d/m/Y') }}</dd>
+                    <dt class="col-5">Saisi par</dt><dd class="col-7">{{ $acteurs[$pret->saisi_par_id] ?? '—' }}, le {{ App\Support\Temps\Horloge::affiche($pret->created_at, 'd/m/Y') }}</dd>
                     @if ($pret->comite_par_id)<dt class="col-5">Comité</dt><dd class="col-7">{{ $acteurs[$pret->comite_par_id] ?? '—' }}</dd>@endif
                     @if ($pret->gerant_par_id)<dt class="col-5">Gérant</dt><dd class="col-7">{{ $acteurs[$pret->gerant_par_id] ?? '—' }}</dd>@endif
                     @if ($pret->getAttribute('motif_decision'))<dt class="col-5">Motif de la décision</dt><dd class="col-7">{{ $pret->getAttribute('motif_decision') }}</dd>@endif
@@ -156,7 +156,7 @@
                     <tbody>
                         @forelse ($remboursements as $r)
                             <tr>
-                                <td>{{ $r->created_at?->format('d/m/Y H:i') }}</td>
+                                <td>{{ App\Support\Temps\Horloge::affiche($r->created_at) }}</td>
                                 <td>{{ $r->mode->libelle() }}</td>
                                 <td class="text-end">{{ $r->montant->formate() }}</td>
                                 <td class="text-end">{{ $r->penalites->formate() }}</td>

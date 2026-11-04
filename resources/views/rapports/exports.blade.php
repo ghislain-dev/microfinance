@@ -56,7 +56,7 @@
         <ul class="list-group list-group-flush">
             @forelse ($exports as $export)
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ $export->libelle() }} · {{ strtoupper($export->format) }} · {{ $export->created_at?->format('d/m/Y H:i') }}
+                    <span>{{ $export->libelle() }} · {{ strtoupper($export->format) }} · {{ App\Support\Temps\Horloge::affiche($export->created_at) }}
                         @if ($export->statut === 'echec') <span class="text-danger small">— échec</span> @endif</span>
                     @if ($export->statut === 'pret')
                         <a href="{{ route('exports.fichier', $export) }}" class="btn btn-outline-primary btn-sm">Télécharger</a>

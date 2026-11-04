@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use App\Support\Temps\Horloge;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use RuntimeException;
 
@@ -15,6 +16,8 @@ abstract class TestCase extends BaseTestCase
 
         // Les ressources compilées (npm run build) ne sont pas nécessaires aux tests.
         $this->withoutVite();
+        // Les identifiants d'organisation repartent de 1 à chaque test : pas de fuseau gardé du test précédent.
+        Horloge::oublier();
     }
 
     /**

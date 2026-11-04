@@ -18,6 +18,7 @@ use App\Domain\Rapports\Models\Export;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
 use App\Support\Montant\Pourcentage;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use InvalidArgumentException;
 
@@ -115,7 +116,7 @@ final class FabriqueTableaux
 
     private function portefeuille(Devise $devise): Tableau
     {
-        $aujourdhui = CarbonImmutable::today();
+        $aujourdhui = Horloge::aujourdhui();
         $lignes = [];
         Pret::query()->with(['membre', 'echeances'])->where('devise', $devise->value)->where('statut', StatutPret::EnCours->value)->orderBy('numero')
             ->each(function (Pret $pret) use (&$lignes, $aujourdhui) {
@@ -141,12 +142,12 @@ final class FabriqueTableaux
         SessionCaisse::query()->with(['caisse', 'caissier', 'ecarts'])->whereBetween('ouverte_le', [$du->startOfDay(), $au->endOfDay()])->orderBy('ouverte_le')
             ->each(function (SessionCaisse $s) use (&$lignes) {
                 $ecarts = $s->ecarts->map(fn ($e) => $e->ecart->formate())->implode(' · ');
-                $lignes[] = ['Session', $s->caisse->code, $s->caissier->name, $s->ouverte_le->format('d/m/Y H:i'),
-                    $s->getAttribute('fermee_le')?->format('d/m/Y H:i') ?? '', $s->statut->libelle(), $ecarts];
+                $lignes[] = ['Session', $s->caisse->code, $s->caissier->name, Horloge::local($s->ouverte_le)->format('d/m/Y H:i'),
+                    $s->getAttribute('fermee_le') !== null ? Horloge::local($s->getAttribute('fermee_le'))->format('d/m/Y H:i') : '', $s->statut->libelle(), $ecarts];
             });
         VersementCollecte::query()->with('collecteur')->whereBetween('created_at', [$du->startOfDay(), $au->endOfDay()])->orderBy('id')
             ->each(function (VersementCollecte $v) use (&$lignes) {
-                $lignes[] = ['Versement collecteur', '', $v->collecteur->name, $v->created_at?->format('d/m/Y H:i') ?? '', '',
+                $lignes[] = ['Versement collecteur', '', $v->collecteur->name, $v->created_at !== null ? Horloge::local($v->created_at)->format('d/m/Y H:i') : '', '',
                     $v->statut === 'valide' ? 'Validé' : 'Écart à justifier', "théorique {$v->theorique->formate()} · compté {$v->compte->formate()}"];
             });
 

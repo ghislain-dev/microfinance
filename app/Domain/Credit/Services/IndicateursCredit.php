@@ -8,6 +8,7 @@ use App\Domain\Credit\Models\EcheancePret;
 use App\Domain\Credit\StatutPret;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
+use App\Support\Temps\Horloge;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
@@ -21,7 +22,7 @@ final class IndicateursCredit
 {
     public function par(int $jours, Devise $devise, ?CarbonImmutable $au = null): Par
     {
-        $au ??= CarbonImmutable::today();
+        $au ??= Horloge::aujourdhui();
         $enCours = fn () => EcheancePret::query()->where('devise', $devise->value)
             ->whereHas('pret', fn ($q) => $q->where('statut', StatutPret::EnCours->value));
 

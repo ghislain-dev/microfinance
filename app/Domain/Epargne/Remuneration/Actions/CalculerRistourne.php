@@ -10,6 +10,7 @@ use App\Domain\Organisation\Models\Organisation;
 use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
 use App\Support\Montant\Montant;
+use App\Support\Temps\Horloge;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonInterface;
@@ -29,7 +30,7 @@ final class CalculerRistourne
         if (! $total->estPositif()) {
             throw new InvalidArgumentException('Le montant de la ristourne doit être positif.');
         }
-        if ($dateReference->isAfter(today())) {
+        if ($dateReference->isAfter(Horloge::aujourdhui($acteur->organisation_id))) {
             throw new InvalidArgumentException('La date de référence ne peut pas être dans le futur.');
         }
 

@@ -55,7 +55,7 @@
                             <td class="text-end">{{ $pret->montant->formate() }}</td>
                             <td>{{ $pret->nombre_echeances }} × {{ mb_strtolower($pret->periodicite->libelle()) }}</td>
                             <td><span class="badge text-bg-{{ $pret->statut->couleur() }}">{{ $pret->statut->libelle() }}</span></td>
-                            <td>{{ $pret->created_at?->format('d/m/Y') }}</td>
+                            <td>{{ App\Support\Temps\Horloge::affiche($pret->created_at, 'd/m/Y') }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="6" class="text-center text-body-secondary py-4">Aucun prêt.</td></tr>

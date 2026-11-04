@@ -7,6 +7,7 @@ namespace App\Domain\Finance\Actions;
 use App\Domain\Finance\Models\ClotureComptable;
 use App\Domain\Organisation\Models\Organisation;
 use App\Support\Audit\JournalAudit;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use InvalidArgumentException;
 
@@ -19,7 +20,7 @@ final class CloturerPeriode
 
     public function executer(Organisation $organisation, CarbonImmutable $dateFin, string $par): ClotureComptable
     {
-        if ($dateFin->isAfter(today())) {
+        if ($dateFin->isAfter(Horloge::aujourdhui($organisation->id))) {
             throw new InvalidArgumentException('Impossible de clôturer une date future.');
         }
 

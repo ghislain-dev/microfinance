@@ -9,6 +9,7 @@ use App\Domain\Finance\Models\Compte;
 use App\Domain\Membres\Models\Membre;
 use App\Support\Audit\EstAudite;
 use App\Support\MultiOrganisation\AppartientAOrganisation;
+use App\Support\Temps\Horloge;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -57,7 +58,7 @@ class CompteEpargne extends Model
 
     public function estBloque(): bool
     {
-        return $this->bloque_jusqu_au !== null && today()->lt($this->bloque_jusqu_au);
+        return $this->bloque_jusqu_au !== null && Horloge::aujourdhui($this->organisation_id)->lt($this->bloque_jusqu_au);
     }
 
     /**

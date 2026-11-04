@@ -10,6 +10,7 @@ use App\Domain\Epargne\Remuneration\Models\Remuneration;
 use App\Domain\Organisation\Models\Organisation;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
+use App\Support\Temps\Horloge;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
@@ -29,7 +30,7 @@ final class CalculerInterets
             throw new InvalidArgumentException("Période invalide : « {$periode} » (AAAA-MM).");
         }
         $fin = CarbonImmutable::parse("{$periode}-01")->endOfMonth()->startOfDay();
-        if (! $fin->isBefore(today())) {
+        if (! $fin->isBefore(Horloge::aujourdhui($organisation->id))) {
             throw new InvalidArgumentException("Le mois {$periode} n'est pas terminé.");
         }
 

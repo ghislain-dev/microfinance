@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Web;
 use App\Domain\Organisation\Models\Organisation;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Temps\Horloge;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -58,6 +59,22 @@ class OrganisationController extends Controller
         $organisation->forceFill(['rappel_echeance_jours' => $jours === null ? null : (int) $jours])->save();
 
         return to_route('organisation.show')->with('statut', $jours === null ? 'Rappels d’échéance désactivés.' : "Rappel envoyé {$jours} jour(s) avant chaque échéance.");
+    }
+
+    /**
+     * Fuseau de l'organisation (ADR 024) : jour des opérations, du taux de change, des échéances et des clôtures.
+     */
+    public function fuseau(Request $request): RedirectResponse
+    {
+        $organisation = $this->organisation($request);
+        Gate::authorize('update', $organisation);
+        $fuseau = $request->validate(['fuseau' => ['required', 'string', 'timezone:all']],
+            ['fuseau.*' => 'Fuseau horaire inconnu (ex. Africa/Kinshasa, Africa/Lubumbashi).'])['fuseau'];
+
+        $organisation->forceFill(['fuseau' => $fuseau])->save();
+        Horloge::oublier();
+
+        return to_route('organisation.show')->with('statut', "Fuseau horaire : {$fuseau}.");
     }
 
     private function organisation(Request $request): Organisation

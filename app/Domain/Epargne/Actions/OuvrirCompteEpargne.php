@@ -13,6 +13,7 @@ use App\Domain\Membres\Models\Membre;
 use App\Domain\Membres\StatutMembre;
 use App\Models\User;
 use App\Support\Acces\AutoriserDansOrganisation;
+use App\Support\Temps\Horloge;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -52,9 +53,9 @@ final class OuvrirCompteEpargne
                 'compte_id' => $compte->id,
                 'numero' => $numero,
                 'rang' => $rang,
-                'date_ouverture' => today()->toDateString(),
+                'date_ouverture' => Horloge::aujourdhui($membre->organisation_id)->toDateString(),
                 'bloque_jusqu_au' => $type->duree_blocage_mois === null
-                    ? null : today()->addMonthsNoOverflow($type->duree_blocage_mois)->toDateString(),
+                    ? null : Horloge::aujourdhui($membre->organisation_id)->addMonthsNoOverflow($type->duree_blocage_mois)->toDateString(),
             ])->save();
 
             return $epargne->load('compte');

@@ -104,7 +104,7 @@
                 <tbody>
                     @forelse ($mouvements as $mouvement)
                         <tr>
-                            <td>{{ $mouvement->created_at?->format('d/m/Y H:i') }}</td>
+                            <td>{{ App\Support\Temps\Horloge::affiche($mouvement->created_at) }}</td>
                             <td>{{ $mouvement->libelleType() }}</td>
                             <td class="text-end">{{ $mouvement->montant->formate() }}</td>
                             <td class="text-end">{{ $mouvement->frais->estZero() ? '' : $mouvement->frais->formate() }}</td>

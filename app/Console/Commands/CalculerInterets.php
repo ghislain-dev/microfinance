@@ -8,6 +8,7 @@ use App\Domain\Epargne\Remuneration\Actions\CalculerInterets as Calculer;
 use App\Domain\Epargne\Remuneration\RemunerationRefusee;
 use App\Domain\Organisation\Models\Organisation;
 use App\Support\Montant\Devise;
+use App\Support\Temps\Horloge;
 use Illuminate\Console\Command;
 
 class CalculerInterets extends Command
@@ -18,10 +19,10 @@ class CalculerInterets extends Command
 
     public function handle(Calculer $calculer): int
     {
-        $periode = (string) ($this->argument('periode') ?? today()->subMonthNoOverflow()->format('Y-m'));
 
         // Pas d'utilisateur connecté : chaque organisation, chaque devise, explicitement.
-        Organisation::query()->where('actif', true)->orderBy('id')->each(function (Organisation $organisation) use ($calculer, $periode) {
+        Organisation::query()->where('actif', true)->orderBy('id')->each(function (Organisation $organisation) use ($calculer) {
+            $periode = (string) ($this->argument('periode') ?? Horloge::aujourdhui($organisation->id)->subMonthNoOverflow()->format('Y-m'));
             foreach (Devise::cases() as $devise) {
                 try {
                     $lot = $calculer->executer($organisation, $periode, $devise);

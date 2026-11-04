@@ -6,7 +6,7 @@ namespace App\Console\Commands;
 
 use App\Domain\Notifications\Actions\EnvoyerRappels as Envoyer;
 use App\Domain\Organisation\Models\Organisation;
-use Carbon\CarbonImmutable;
+use App\Support\Temps\Horloge;
 use Illuminate\Console\Command;
 
 class EnvoyerRappels extends Command
@@ -17,9 +17,8 @@ class EnvoyerRappels extends Command
 
     public function handle(Envoyer $envoyer): int
     {
-        $aujourdhui = CarbonImmutable::today();
         // Pas d'utilisateur connecté : chaque organisation, explicitement.
-        Organisation::query()->where('actif', true)->orderBy('id')->each(fn (Organisation $o) => $envoyer->executer($o, $aujourdhui));
+        Organisation::query()->where('actif', true)->orderBy('id')->each(fn (Organisation $o) => $envoyer->executer($o, Horloge::aujourdhui($o->id)));
 
         return self::SUCCESS;
     }

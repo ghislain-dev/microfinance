@@ -29,7 +29,7 @@
 
     <table>
         <tr><td class="libelle">Reçu n°</td><td><strong>{{ $recu->numero }}</strong></td></tr>
-        <tr><td class="libelle">Date</td><td>{{ $mouvement->created_at?->format('d/m/Y H:i') }}</td></tr>
+        <tr><td class="libelle">Date</td><td>{{ App\Support\Temps\Horloge::affiche($mouvement->created_at, organisationId: $mouvement->organisation_id) }}</td></tr>
         <tr><td class="libelle">Opération</td><td>{{ $mouvement->libelleType() }}</td></tr>
         <tr><td class="libelle">Membre</td><td>{{ $compte->membre->nomComplet() }} ({{ $compte->membre->numero }})</td></tr>
         <tr><td class="libelle">Compte</td><td>{{ $compte->numero }} — {{ $compte->type->libelle }}</td></tr>

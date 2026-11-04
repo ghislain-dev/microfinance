@@ -51,7 +51,7 @@
                     @forelse ($historique as $taux)
                         <tr>
                             <td>{{ $taux->date_application->format('d/m/Y') }}</td>
-                            <td>{{ $taux->created_at?->format('d/m/Y H:i') }}</td>
+                            <td>{{ App\Support\Temps\Horloge::affiche($taux->created_at) }}</td>
                             <td class="text-end">{{ $taux->achat()->formate() }}</td>
                             <td class="text-end">{{ $taux->vente()->formate() }}</td>
                             <td>{{ $taux->saisiPar?->name }}</td>

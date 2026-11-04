@@ -11,6 +11,7 @@ use App\Domain\Comptabilite\Models\DemandeCloture;
 use App\Domain\Finance\Models\ClotureComptable;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Temps\Horloge;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class ClotureController extends Controller
         $mois = $request->validate(['mois' => ['required', 'date_format:Y-m']], ['mois.*' => 'Mois attendu au format AAAA-MM.'])['mois'];
 
         try {
-            $demander->executer($this->acteur($request), CarbonImmutable::createFromFormat('!Y-m', $mois) ?: CarbonImmutable::today());
+            $demander->executer($this->acteur($request), CarbonImmutable::createFromFormat('!Y-m', $mois) ?: Horloge::aujourdhui());
         } catch (ClotureRefusee $e) {
             return back()->withInput()->withErrors(['mois' => $e->getMessage()]);
         }

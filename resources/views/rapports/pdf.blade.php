@@ -36,6 +36,6 @@
             @endforeach
         </tbody>
     </table>
-    <div class="pied">Édité le {{ now()->format('d/m/Y à H:i') }}</div>
+    <div class="pied">Édité le {{ App\Support\Temps\Horloge::affiche(now(), 'd/m/Y à H:i', $organisation->id) }}</div>
 </body>
 </html>

@@ -17,7 +17,7 @@
                     <strong>{{ $demande->type === 'retrait' ? 'Retrait' : 'Virement' }} de {{ $demande->montant->formate() }}</strong>
                     sur {{ $demande->compteEpargne->numero }}
                     @if ($demande->destination) vers {{ $demande->destination->numero }} @endif
-                    <span class="text-body-secondary">— demandé par {{ $demande->demandeur->name }}, le {{ $demande->created_at?->format('d/m/Y H:i') }}</span>
+                    <span class="text-body-secondary">— demandé par {{ $demande->demandeur->name }}, le {{ App\Support\Temps\Horloge::affiche($demande->created_at) }}</span>
                 </p>
                 @can('decider', $demande)
                     <div class="row g-2">

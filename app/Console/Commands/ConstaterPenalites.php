@@ -6,7 +6,7 @@ namespace App\Console\Commands;
 
 use App\Domain\Credit\Actions\ConstaterPenalites as Constater;
 use App\Domain\Organisation\Models\Organisation;
-use Carbon\CarbonImmutable;
+use App\Support\Temps\Horloge;
 use Illuminate\Console\Command;
 
 class ConstaterPenalites extends Command
@@ -17,11 +17,10 @@ class ConstaterPenalites extends Command
 
     public function handle(Constater $constater): int
     {
-        $aujourdhui = CarbonImmutable::today();
 
         // Pas d'utilisateur connecté : chaque organisation, explicitement.
-        Organisation::query()->where('actif', true)->orderBy('id')->each(function (Organisation $organisation) use ($constater, $aujourdhui) {
-            $nombre = $constater->executer($organisation, $aujourdhui);
+        Organisation::query()->where('actif', true)->orderBy('id')->each(function (Organisation $organisation) use ($constater) {
+            $nombre = $constater->executer($organisation, Horloge::aujourdhui($organisation->id));
             $this->info("{$organisation->code} : {$nombre} pénalité(s) constatée(s).");
         });
 
