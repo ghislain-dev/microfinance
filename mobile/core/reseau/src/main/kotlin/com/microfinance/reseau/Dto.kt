@@ -103,6 +103,12 @@ data class NotificationMembre(val id: Long, val titre: String, val corps: String
 data class PageNotifications(val data: List<NotificationMembre>, val suivant: String? = null)
 
 @Serializable
+data class PeriodeReleve(val du: String, val au: String)
+
+@Serializable
+data class ReponseReleve(val id: Long, val statut: String)
+
+@Serializable
 data class JetonPushDto(val jeton: String, val plateforme: String = "android")
 
 // ---- Collecte ----

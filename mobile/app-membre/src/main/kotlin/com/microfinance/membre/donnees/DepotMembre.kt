@@ -10,9 +10,15 @@ import com.microfinance.reseau.ErreurApi
 import com.microfinance.reseau.JetonPushDto
 import com.microfinance.reseau.Mouvement
 import com.microfinance.reseau.NotificationMembre
+import com.microfinance.reseau.PeriodeReleve
 import com.microfinance.reseau.PretMembre
 import com.microfinance.reseau.Resultat
 import com.microfinance.reseau.TontineMembre
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,6 +59,28 @@ class DepotMembre @Inject constructor(
     suspend fun notifications(): Resultat<List<NotificationMembre>> = when (val r = appel.corps { api.notifications() }) {
         is Resultat.Echec -> r
         is Resultat.Succes -> Resultat.Succes(r.valeur.data)
+    }
+
+    /**
+     * Demande le relevé, attend sa préparation par le serveur (file d'attente), puis l'enregistre dans le cache.
+     */
+    suspend fun releve(compte: Long, du: LocalDate, au: LocalDate, dossier: File): Resultat<File> {
+        val demande = when (val r = appel.corps { api.demanderReleve(compte, PeriodeReleve(du.toString(), au.toString())) }) {
+            is Resultat.Echec -> return r
+            is Resultat.Succes -> r.valeur
+        }
+        repeat(30) {
+            when (val r = appel.executer { api.releve(demande.id) }) {
+                is Resultat.Echec -> return r
+                is Resultat.Succes -> if (r.valeur.code() == 200) {
+                    val fichier = File(dossier, "releve-${demande.id}.pdf")
+                    withContext(Dispatchers.IO) { r.valeur.body()?.byteStream()?.use { e -> fichier.outputStream().use { e.copyTo(it) } } }
+                    return Resultat.Succes(fichier)
+                }
+            }
+            delay(2_000)
+        }
+        return Resultat.Echec(ErreurApi.Serveur(504))
     }
 
     suspend fun enregistrerJetonPush(jeton: String) {

@@ -13,7 +13,7 @@ dependencies {
     api(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
     implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp)
+    api(libs.okhttp)
     api(libs.retrofit.core)
     implementation(libs.retrofit.kotlinx.serialization)
 
