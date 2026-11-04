@@ -24,6 +24,7 @@ class RecuEscPosTest {
         assertTrue(lignes.contains(RecuEscPos.colonnes("Fonds social", "500,00 CDF")))
         assertTrue(lignes.contains(RecuEscPos.colonnes("Date", "04/11/2026 09:30")))
         assertTrue(lignes.contains("Mukendi Benedicte"))
+        assertTrue(lignes.contains("Cotisation - Mamans du marche"))
     }
 
     @Test

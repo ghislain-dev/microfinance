@@ -59,5 +59,6 @@ object RecuEscPos {
     }
 
     fun sansAccents(texte: String): String =
-        Normalizer.normalize(texte, Normalizer.Form.NFD).replace(Regex("\\p{M}"), "").replace(Regex("[^\\x20-\\x7E]"), "?")
+        Normalizer.normalize(texte.replace(Regex("[\u2013\u2014]"), "-").replace('\u2019', '\''), Normalizer.Form.NFD)
+            .replace(Regex("\\p{M}"), "").replace(Regex("[^\\x20-\\x7E]"), "?")
 }
