@@ -105,6 +105,13 @@
                        @class(['form-control', 'is-invalid' => $errors->has('delai_grace_jours')])>
                 @error('delai_grace_jours') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
+            <div class="col-md-3">
+                <label for="delai_saisie_garantie_jours" class="form-label">Prélever la garantie après (jours de retard)</label>
+                <input id="delai_saisie_garantie_jours" name="delai_saisie_garantie_jours" type="number" min="1" max="3650" placeholder="Vide : jamais"
+                       value="{{ old('delai_saisie_garantie_jours', $produit?->delai_saisie_garantie_jours) }}"
+                       @class(['form-control', 'is-invalid' => $errors->has('delai_saisie_garantie_jours')])>
+                @error('delai_saisie_garantie_jours') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
             @if ($produit)
                 <div class="col-12 form-check ms-2">
                     <input type="hidden" name="actif" value="0">

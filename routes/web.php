@@ -128,6 +128,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/prets/{pret}/analyse', [PretController::class, 'analyser'])->whereNumber('pret')->name('prets.analyse');
     Route::post('/prets/{pret}/decaissement', [PretController::class, 'decaisser'])->whereNumber('pret')->name('prets.decaissement');
     Route::post('/prets/{pret}/remboursements', [PretController::class, 'rembourser'])->whereNumber('pret')->name('prets.remboursements');
+    Route::post('/prets/{pret}/saisie-garantie', [PretController::class, 'saisirGarantie'])->whereNumber('pret')->name('prets.saisie-garantie');
+    Route::post('/saisies-garantie/{saisie}/{decision}', [PretController::class, 'deciderSaisie'])->whereNumber('saisie')
+        ->whereIn('decision', ['valider', 'rejeter'])->name('saisies-garantie.decider');
     Route::post('/prets/{pret}/{decision}', [PretController::class, 'decider'])->whereNumber('pret')->whereIn('decision', ['approuver', 'rejeter'])->name('prets.decider');
     Route::get('/collecte', [CollecteController::class, 'index'])->name('collecte.index');
     Route::post('/collecte/parametres', [CollecteController::class, 'parametres'])->name('collecte.parametres');

@@ -80,6 +80,8 @@ final class EnregistrerProduitCredit
             'garantie_epargne_pb' => $garantie,
             'penalite_jour_pb' => Pourcentage::pointsDeBase((string) $donnees['penalite_jour'], 'Pénalité'),
             'delai_grace_jours' => max(0, (int) $donnees['delai_grace_jours']),
+            // Vide : la garantie n'est jamais prélevée sur ce produit.
+            'delai_saisie_garantie_jours' => blank($donnees['delai_saisie_garantie_jours'] ?? null) ? null : max(1, (int) $donnees['delai_saisie_garantie_jours']),
         ];
     }
 }

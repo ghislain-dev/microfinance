@@ -55,11 +55,13 @@ enum Role: string
                 Droit::CreditParametrer, Droit::CreditSaisir, Droit::CreditApprouverGerant, Droit::CreditDecaisser,
                 Droit::MembresAccesMobile, Droit::CollecteGerer,
                 Droit::ComptaVoir, Droit::ComptaValiderCloture, Droit::RapportsReleve, Droit::RapportsCredit, Droit::RapportsCaisse,
+                Droit::CreditSaisirGarantie,
             ],
             self::Comptable => [
                 Droit::TableauDeBordVoir, Droit::AgencesVoir, Droit::AuditVoir, Droit::OperationsExtourner, Droit::MembresVoir,
                 Droit::OperationsValiderDecaissement, Droit::ChangeSaisirTaux, Droit::EpargneRemuneration, Droit::CreditDecaisser,
                 Droit::ComptaVoir, Droit::ComptaParametrer, Droit::ComptaCloturer, Droit::RapportsReleve, Droit::RapportsCredit, Droit::RapportsCaisse,
+                Droit::CreditValiderSaisie,
             ],
             self::Caissier => [
                 Droit::TableauDeBordVoir, Droit::MembresVoir, Droit::MembresGerer, Droit::CaisseOperer, Droit::EpargneOuvrirCompte,

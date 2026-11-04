@@ -35,6 +35,26 @@ final class Blocages
             ?->forceFill(['leve_le' => now()])->save();
     }
 
+    /**
+     * Montant encore bloqué pour cette référence (zéro si levé ou inconnu).
+     */
+    public function reste(string $reference, Montant $zero): Montant
+    {
+        $blocage = BlocageEpargne::query()->where('reference', $reference)->whereNull('leve_le')->first();
+
+        return $blocage === null ? $zero : $blocage->montant;
+    }
+
+    /**
+     * Libère une partie du blocage (ex. garantie prélevée pour rembourser) ; tout libéré : blocage levé.
+     */
+    public function reduire(string $reference, Montant $montant): void
+    {
+        $blocage = BlocageEpargne::query()->where('reference', $reference)->whereNull('leve_le')->lockForUpdate()->firstOrFail();
+        $reste = $blocage->montant->moins($montant);
+        $blocage->forceFill($reste->estPositif() ? ['montant' => $reste] : ['montant' => Montant::zero($reste->devise), 'leve_le' => now()])->save();
+    }
+
     public function total(CompteEpargne $compte): Montant
     {
         return new Montant((int) BlocageEpargne::query()->where('compte_epargne_id', $compte->id)->whereNull('leve_le')->sum('montant'),

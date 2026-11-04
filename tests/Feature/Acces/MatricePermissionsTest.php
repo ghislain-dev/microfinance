@@ -56,6 +56,8 @@ const MATRICE_PHASE_0 = [
     'rapports.releve' => ['gerant', 'comptable', 'caissier'],
     'rapports.credit' => ['gerant', 'comptable', 'agent_credit'],
     'rapports.caisse' => ['gerant', 'comptable'],
+    'credit.saisir_garantie' => ['gerant'],
+    'credit.valider_saisie' => ['comptable'],
 ];
 
 const ROLES = ['admin', 'gerant', 'comptable', 'caissier', 'collecteur', 'agent_credit', 'comite', 'membre'];

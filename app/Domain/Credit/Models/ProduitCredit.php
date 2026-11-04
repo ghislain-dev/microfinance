@@ -30,10 +30,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $garantie_epargne_pb
  * @property int $penalite_jour_pb
  * @property int $delai_grace_jours
+ * @property int|null $delai_saisie_garantie_jours
  * @property bool $actif
  */
 #[Fillable(['code', 'libelle', 'devise', 'taux_mensuel_pb', 'periodicite', 'duree_max', 'montant_minimum', 'montant_maximum',
-    'anciennete_mois', 'multiple_epargne', 'garantie_epargne_pb', 'penalite_jour_pb', 'delai_grace_jours', 'actif'])]
+    'anciennete_mois', 'multiple_epargne', 'garantie_epargne_pb', 'penalite_jour_pb', 'delai_grace_jours', 'delai_saisie_garantie_jours', 'actif'])]
 #[Table('produits_credit')]
 #[UsePolicy(ProduitCreditPolicy::class)]
 class ProduitCredit extends Model
@@ -57,6 +58,7 @@ class ProduitCredit extends Model
             'garantie_epargne_pb' => 'integer',
             'penalite_jour_pb' => 'integer',
             'delai_grace_jours' => 'integer',
+            'delai_saisie_garantie_jours' => 'integer',
             'actif' => 'boolean',
         ];
     }

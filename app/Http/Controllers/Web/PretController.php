@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Web;
 use App\Domain\Credit\Actions\AnalyserPret;
 use App\Domain\Credit\Actions\DecaisserPret;
 use App\Domain\Credit\Actions\DeciderPret;
+use App\Domain\Credit\Actions\DeciderSaisieGarantie;
 use App\Domain\Credit\Actions\DemanderPret;
+use App\Domain\Credit\Actions\DemanderSaisieGarantie;
 use App\Domain\Credit\Actions\RembourserPret;
 use App\Domain\Credit\CreditRefuse;
 use App\Domain\Credit\MethodeCalcul;
@@ -16,6 +18,7 @@ use App\Domain\Credit\Models\GarantiePret;
 use App\Domain\Credit\Models\Pret;
 use App\Domain\Credit\Models\ProduitCredit;
 use App\Domain\Credit\Models\Remboursement;
+use App\Domain\Credit\Models\SaisieGarantie;
 use App\Domain\Credit\ModeRemboursement;
 use App\Domain\Credit\Services\IndicateursCredit;
 use App\Domain\Credit\StatutPret;
@@ -134,6 +137,7 @@ class PretController extends Controller
             'remboursements' => Remboursement::query()->where('pret_id', $pret->id)->latest('id')->paginate(20),
             'acteurs' => $acteurs,
             'cle' => (string) Str::uuid(),
+            'saisie' => SaisieGarantie::query()->where('pret_id', $pret->id)->where('statut', 'en_attente')->first(),
         ]);
     }
 
@@ -199,6 +203,34 @@ class PretController extends Controller
         }
 
         return to_route('prets.show', $pret)->with('statut', "Remboursement de {$r->montant->formate()} enregistré.");
+    }
+
+    public function saisirGarantie(Request $request, Pret $pret, DemanderSaisieGarantie $demander): RedirectResponse
+    {
+        Gate::authorize('saisirGarantie', $pret);
+        $motif = $request->validate(['motif' => ['required', 'string', 'max:500']])['motif'];
+
+        try {
+            $demander->executer($this->acteur($request), $pret, $motif);
+        } catch (CreditRefuse $e) {
+            return back()->withErrors(['saisie' => $e->getMessage()]);
+        }
+
+        return to_route('prets.show', $pret)->with('statut', 'Prélèvement de la garantie demandé : le comptable doit le valider.');
+    }
+
+    public function deciderSaisie(Request $request, SaisieGarantie $saisie, DeciderSaisieGarantie $decider, string $decision): RedirectResponse
+    {
+        Gate::authorize('validerSaisie', $saisie);
+        $motif = $request->validate(['motif' => ['required', 'string', 'max:500']])['motif'];
+
+        try {
+            $decision === 'valider' ? $decider->valider($this->acteur($request), $saisie, $motif) : $decider->rejeter($this->acteur($request), $saisie, $motif);
+        } catch (CreditRefuse|CompteEpargneRefuse|RefusFinancier|InvalidArgumentException $e) {
+            return back()->withErrors(['saisie' => $e->getMessage()]);
+        }
+
+        return to_route('prets.show', $saisie->pret_id)->with('statut', $decision === 'valider' ? 'Garantie prélevée et imputée sur les échéances en retard.' : 'Prélèvement rejeté.');
     }
 
     public function piece(GarantiePret $garantie): StreamedResponse

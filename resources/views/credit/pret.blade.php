@@ -93,6 +93,37 @@
         </form>
     @endcan
 
+    @if ($saisie)
+        <div class="card card-body mb-4 border-warning">
+            <h2 class="h6">Prélèvement de la garantie demandé : {{ $saisie->montant->formate() }}</h2>
+            <p class="small mb-2">{{ $saisie->getAttribute('motif') }} — {{ $acteurs[$saisie->demande_par_id] ?? '' }}</p>
+            @can('validerSaisie', $saisie)
+                <div class="row g-2">
+                    @foreach (['valider' => ['Valider le prélèvement', 'success'], 'rejeter' => ['Rejeter', 'outline-danger']] as $decision => [$libelle, $couleur])
+                        <form method="POST" action="{{ route('saisies-garantie.decider', [$saisie, $decision]) }}" class="col-md-6 d-flex gap-2">
+                            @csrf
+                            <input name="motif" required maxlength="500" placeholder="Motif" aria-label="Motif" class="form-control form-control-sm">
+                            <button type="submit" class="btn btn-{{ $couleur }} btn-sm">{{ $libelle }}</button>
+                        </form>
+                    @endforeach
+                </div>
+            @endcan
+        </div>
+    @elseif ($pret->statut === App\Domain\Credit\StatutPret::EnCours && $pret->getAttribute('delai_saisie_garantie_jours') !== null)
+        @can('saisirGarantie', $pret)
+            <form method="POST" action="{{ route('prets.saisie-garantie', $pret) }}" class="card card-body mb-4">
+                @csrf
+                <h2 class="h6">Prélever la garantie</h2>
+                <p class="small text-body-secondary">Possible après {{ $pret->getAttribute('delai_saisie_garantie_jours') }} jours de retard ; le comptable valide.
+                    La garantie bloquée rembourse les échéances échues (pénalités, intérêts, capital).</p>
+                <div class="d-flex gap-2">
+                    <input name="motif" required maxlength="500" placeholder="Motif" aria-label="Motif du prélèvement" class="form-control">
+                    <button type="submit" class="btn btn-outline-danger">Prélever la garantie</button>
+                </div>
+            </form>
+        @endcan
+    @endif
+
     @if ($echeances->isNotEmpty())
         @if ($pret->statut === App\Domain\Credit\StatutPret::EnCours)
             @can('rembourser', $pret)

@@ -47,11 +47,13 @@
 - Garantie = montant × pourcentage, **arrondie au centime supérieur** (jamais sous le pourcentage).
 - PAR 30 / PAR 90 = encours des prêts ayant une échéance impayée depuis plus de 30 / 90 jours ÷ encours total.
 
-## À confirmer
+## Confirmé le 2026-11-04
 
-- L'ancienneté se compte depuis l'**inscription du membre dans l'application** (pas de date d'adhésion
-  saisie à part).
+- L'ancienneté se compte depuis l'**inscription du membre dans l'application**.
 - « Un prêt à la fois » bloque aussi une **nouvelle demande** tant qu'une demande est en analyse ou approuvée.
 - Imputation **échéance par échéance, la plus ancienne d'abord** (pénalités → intérêts → capital dans chacune).
-- La garantie bloquée **ne sert pas** à rembourser (même en retard) ; aucune saisie de garantie en cas de défaut.
-- Remboursement en espèces : pas encore de reçu PDF (les reçus actuels portent sur l'épargne).
+- **Prélèvement de la garantie en cas de défaut** : après un délai de retard fixé par produit (vide : jamais,
+  figé sur le prêt), **demandé par le gérant, validé par le comptable** (jamais l'auteur) ; montant = le plus
+  petit de la garantie encore bloquée et de l'échu, recalculé à la validation ; la part libérée rembourse les
+  échéances échues avec l'imputation habituelle ; le reste de la garantie reste bloqué.
+- **Reçu PDF de remboursement** (guichet et collecteur).

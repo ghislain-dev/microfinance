@@ -45,4 +45,6 @@ enum Droit: string
     case RapportsReleve = 'rapports.releve';
     case RapportsCredit = 'rapports.credit';
     case RapportsCaisse = 'rapports.caisse';
+    case CreditSaisirGarantie = 'credit.saisir_garantie';
+    case CreditValiderSaisie = 'credit.valider_saisie';
 }

@@ -70,6 +70,7 @@ final class DemanderPret
                     'garantie_epargne_pb' => $produit->garantie_epargne_pb,
                     'penalite_jour_pb' => $produit->penalite_jour_pb,
                     'delai_grace_jours' => $produit->delai_grace_jours,
+                    'delai_saisie_garantie_jours' => $produit->delai_saisie_garantie_jours,
                     'objet' => $objet,
                     'statut' => StatutPret::EnAnalyse,
                     'saisi_par_id' => $agent->id,

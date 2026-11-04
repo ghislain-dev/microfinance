@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Credit\Actions;
 
 use App\Domain\Caisse\Models\Caisse;
+use App\Domain\Caisse\Models\SessionCaisse;
 use App\Domain\Credit\CreditRefuse;
 use App\Domain\Credit\Models\EcheancePret;
 use App\Domain\Credit\Models\Pret;
@@ -53,6 +54,25 @@ final class RembourserPret
             throw new CreditRefuse("Montant attendu : positif, en {$pret->devise->value}.");
         }
 
+        return $this->effectuer($pret, $montant, $mode, $cle, $session, $caisseCollecteur);
+    }
+
+    /**
+     * Remboursement prélevé sur la garantie bloquée (ADR 021, défaut de paiement). Appelé seulement par
+     * DeciderSaisieGarantie, qui a déjà vérifié la décision du gérant et la validation du comptable, et libéré
+     * la part de garantie correspondante.
+     */
+    public function prelevementSurGarantie(Pret $pret, Montant $montant, string $cle): Remboursement
+    {
+        if (($deja = $this->moteur->dejaEnregistree($cle)) !== null) {
+            return Remboursement::query()->where('operation_id', $deja->id)->firstOrFail();
+        }
+
+        return $this->effectuer($pret, $montant, ModeRemboursement::Epargne, $cle, null, null);
+    }
+
+    private function effectuer(Pret $pret, Montant $montant, ModeRemboursement $mode, string $cle, ?SessionCaisse $session, ?Caisse $caisseCollecteur): Remboursement
+    {
         return DB::transaction(function () use ($pret, $montant, $mode, $cle, $session, $caisseCollecteur) {
             $pret = Pret::query()->with(['comptePret', 'comptePenalites'])->whereKey($pret->id)->lockForUpdate()->firstOrFail();
             if ($pret->statut !== StatutPret::EnCours) {

@@ -6,6 +6,7 @@ namespace App\Domain\Credit\Policies;
 
 use App\Domain\Credit\Models\Pret;
 use App\Domain\Credit\Models\ProduitCredit;
+use App\Domain\Credit\Models\SaisieGarantie;
 use App\Domain\Credit\StatutPret;
 use App\Domain\Membres\Models\Membre;
 use App\Domain\Organisation\Acces\Droit;
@@ -76,5 +77,24 @@ class PretPolicy
     public function collecter(User $acteur, Pret $pret): bool
     {
         return $pret->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CollecteSaisir->value);
+    }
+
+    /**
+     * Prélèvement de la garantie d'un prêt en défaut : demandé par le gérant…
+     */
+    public function saisirGarantie(User $acteur, Pret $pret): bool
+    {
+        return $pret->organisation_id === $acteur->organisation_id && $acteur->can(Droit::CreditSaisirGarantie->value);
+    }
+
+    /**
+     * … validé par le comptable, jamais l'auteur de la demande.
+     */
+    public function validerSaisie(User $acteur, SaisieGarantie $saisie): bool
+    {
+        return $saisie->organisation_id === $acteur->organisation_id
+            && $saisie->statut === 'en_attente'
+            && $saisie->demande_par_id !== $acteur->id
+            && $acteur->can(Droit::CreditValiderSaisie->value);
     }
 }

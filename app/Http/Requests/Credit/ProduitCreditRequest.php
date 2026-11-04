@@ -37,6 +37,7 @@ class ProduitCreditRequest extends FormRequest
             'garantie_epargne' => ['required', 'string', 'regex:/^(100([.,]0{1,2})?|\d{1,2}([.,]\d{1,2})?)$/'],
             'penalite_jour' => ['required', 'string', self::POURCENTAGE],
             'delai_grace_jours' => ['required', 'integer', 'min:0', 'max:365'],
+            'delai_saisie_garantie_jours' => ['nullable', 'integer', 'min:1', 'max:3650'],
             'actif' => ['nullable', 'boolean'],
         ];
     }
