@@ -118,16 +118,24 @@ class AccueilViewModel @Inject constructor(
 @Composable
 fun EcranAccueil(onCompte: (Long, String) -> Unit, onReconnexion: () -> Unit, viewModel: AccueilViewModel = hiltViewModel()) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
-    var onglet by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(etat.reconnexion) { if (etat.reconnexion) onReconnexion() }
     val autorisation = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
     LaunchedEffect(Unit) { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) autorisation.launch(Manifest.permission.POST_NOTIFICATIONS) }
 
+    ContenuAccueil(etat, onCompte = onCompte, onActualiser = viewModel::actualiser, onQuitter = viewModel::deconnecter)
+}
+
+/** Affichage seul de l'accueil (sans ViewModel) : testé sans téléphone. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ContenuAccueil(etat: AccueilUiState, onCompte: (Long, String) -> Unit, onActualiser: () -> Unit, onQuitter: () -> Unit) {
+    var onglet by rememberSaveable { mutableIntStateOf(0) }
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Mon épargne") }, actions = {
-                TextButton(onClick = viewModel::actualiser) { Text("Actualiser") }
-                TextButton(onClick = viewModel::deconnecter) { Text("Quitter") }
+                TextButton(onClick = onActualiser) { Text("Actualiser") }
+                TextButton(onClick = onQuitter) { Text("Quitter") }
             })
         },
         bottomBar = {

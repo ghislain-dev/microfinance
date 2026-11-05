@@ -24,6 +24,7 @@ android {
     }
 
     buildFeatures.buildConfig = true
+    testOptions.unitTests.isIncludeAndroidResources = true
 
     buildTypes {
         release {
@@ -48,4 +49,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+
+    testImplementation(libs.robolectric)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
 }
