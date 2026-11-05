@@ -1,0 +1,33 @@
+LICENCE PROPRIÉTAIRE
+
+Copyright (c) 2026 ghislain-dev. Tous droits réservés.
+
+Le présent logiciel, comprenant le code source, le code compilé, les applications mobiles, la documentation,
+les schémas de base de données et tous les fichiers associés (ci-après « le Logiciel »), est la propriété
+exclusive de ghislain-dev (ci-après « le Titulaire »).
+
+1. Aucun droit n'est concédé sans autorisation écrite préalable du Titulaire. En particulier, il est interdit,
+   en tout ou en partie, de :
+   a) utiliser, installer ou exploiter le Logiciel, y compris en service accessible à distance ;
+   b) copier, reproduire ou publier le Logiciel ;
+   c) modifier, adapter, traduire le Logiciel ou créer des œuvres dérivées ;
+   d) distribuer, vendre, louer, prêter, céder ou concéder en sous-licence le Logiciel ;
+   e) décompiler, désassembler ou procéder à l'ingénierie inverse du Logiciel, sauf dans les cas où la loi
+      applicable l'autorise expressément malgré cette interdiction.
+
+2. Toute utilisation autorisée fait l'objet d'un contrat écrit distinct qui en précise l'étendue, la durée et
+   les conditions. En l'absence d'un tel contrat, aucune licence, expresse ou implicite, n'est accordée.
+
+3. Les mentions de droit d'auteur et la présente licence ne peuvent être ni supprimées ni modifiées.
+
+4. Le Logiciel incorpore des composants de tiers (notamment le cadre Laravel et diverses bibliothèques PHP,
+   JavaScript, Kotlin et Android) qui restent soumis à leurs propres licences. La présente licence ne
+   s'applique pas à ces composants.
+
+5. LE LOGICIEL EST FOURNI « EN L'ÉTAT », SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU IMPLICITE, NOTAMMENT DE
+   QUALITÉ MARCHANDE, D'ADÉQUATION À UN USAGE PARTICULIER OU D'ABSENCE DE CONTREFAÇON, SAUF STIPULATION
+   CONTRAIRE D'UN CONTRAT ÉCRIT. EN AUCUN CAS LE TITULAIRE NE POURRA ÊTRE TENU RESPONSABLE DE DOMMAGES DIRECTS
+   OU INDIRECTS RÉSULTANT DE L'UTILISATION OU DE L'IMPOSSIBILITÉ D'UTILISER LE LOGICIEL, DANS LA LIMITE
+   AUTORISÉE PAR LA LOI APPLICABLE.
+
+Pour toute demande d'autorisation : contacter le Titulaire.
