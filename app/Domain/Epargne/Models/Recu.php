@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Epargne\Models;
 
+use App\Domain\Credit\Models\Remboursement;
 use App\Domain\Epargne\Policies\RecuPolicy;
 use App\Support\Montant\Devise;
 use App\Support\Montant\Montant;
@@ -34,6 +35,14 @@ class Recu extends Model
     public function mouvement(): BelongsTo
     {
         return $this->belongsTo(MouvementEpargne::class, 'mouvement_epargne_id');
+    }
+
+    /**
+     * @return BelongsTo<Remboursement, $this>
+     */
+    public function remboursement(): BelongsTo
+    {
+        return $this->belongsTo(Remboursement::class, 'remboursement_pret_id');
     }
 
     /**

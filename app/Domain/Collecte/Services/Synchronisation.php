@@ -14,6 +14,7 @@ use App\Domain\Collecte\Models\Tournee;
 use App\Domain\Credit\Actions\RembourserPret;
 use App\Domain\Credit\CreditRefuse;
 use App\Domain\Credit\Models\Pret;
+use App\Domain\Credit\Models\Remboursement;
 use App\Domain\Credit\ModeRemboursement;
 use App\Domain\Epargne\Actions\Deposer;
 use App\Domain\Epargne\Actions\Retirer;
@@ -200,7 +201,8 @@ final class Synchronisation
     private function resultat(OperationSync $ligne, bool $rejoue): array
     {
         $recu = $ligne->operation_id === null ? null
-            : MouvementEpargne::query()->with('recu')->where('operation_id', $ligne->operation_id)->first()?->recu?->getAttribute('numero');
+            : (MouvementEpargne::query()->with('recu')->where('operation_id', $ligne->operation_id)->first()?->recu?->getAttribute('numero')
+                ?? Remboursement::query()->with('recu')->where('operation_id', $ligne->operation_id)->first()?->recu?->getAttribute('numero'));
 
         return array_filter([
             'cle' => $ligne->getAttribute('cle'),

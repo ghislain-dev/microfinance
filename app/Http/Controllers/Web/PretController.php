@@ -134,7 +134,7 @@ class PretController extends Controller
             'echeances' => $echeances,
             'resteDu' => $echeances->reduce(fn (Montant $t, EcheancePret $e) => $t->plus($e->resteDu()), $zero),
             'capitalRestant' => $echeances->reduce(fn (Montant $t, EcheancePret $e) => $t->plus($e->capitalRestant()), $zero),
-            'remboursements' => Remboursement::query()->where('pret_id', $pret->id)->latest('id')->paginate(20),
+            'remboursements' => Remboursement::query()->with('recu')->where('pret_id', $pret->id)->latest('id')->paginate(20),
             'acteurs' => $acteurs,
             'cle' => (string) Str::uuid(),
             'saisie' => SaisieGarantie::query()->where('pret_id', $pret->id)->where('statut', 'en_attente')->first(),

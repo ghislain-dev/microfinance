@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Epargne\Recus;
 
+use App\Domain\Credit\Models\Remboursement;
 use App\Domain\Epargne\Models\Recu;
+use App\Domain\Organisation\Models\Organisation;
 use App\Models\User;
 use App\Support\Montant\MontantEnLettres;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -44,12 +46,16 @@ final class GenererRecuPdf implements ShouldQueue
     public function html(): string
     {
         $recu = $this->recu();
+        if ($recu->getAttribute('remboursement_pret_id') !== null) {
+            return $this->htmlRemboursement($recu);
+        }
         $mouvement = $recu->mouvement;
+        if ($mouvement === null) {
+            throw new \LogicException("Reçu {$recu->numero} sans opération.");
+        }
         $compte = $mouvement->compteEpargne;
         $organisation = $compte->membre->organisation;
-        $logo = $organisation?->logo_chemin !== null && Storage::disk('local')->exists($organisation->logo_chemin)
-            ? 'data:'.Storage::disk('local')->mimeType($organisation->logo_chemin).';base64,'.base64_encode((string) Storage::disk('local')->get($organisation->logo_chemin))
-            : null;
+        $logo = $this->logo($organisation);
 
         return view('recus.recu', [
             'recu' => $recu,
@@ -60,6 +66,30 @@ final class GenererRecuPdf implements ShouldQueue
             'enLettres' => MontantEnLettres::ecrire($mouvement->montant),
             'caissier' => User::withoutGlobalScopes()->find($mouvement->getAttribute('auteur_id')),
         ])->render();
+    }
+
+    private function htmlRemboursement(Recu $recu): string
+    {
+        $remboursement = Remboursement::withoutGlobalScopes()->with('pret.membre.organisation', 'pret.membre.agence')
+            ->findOrFail($recu->getAttribute('remboursement_pret_id'));
+        $organisation = $remboursement->pret->membre->organisation;
+
+        return view('recus.recu-pret', [
+            'recu' => $recu,
+            'remboursement' => $remboursement,
+            'pret' => $remboursement->pret,
+            'organisation' => $organisation,
+            'logo' => $this->logo($organisation),
+            'enLettres' => MontantEnLettres::ecrire($remboursement->montant),
+            'agent' => User::withoutGlobalScopes()->find($remboursement->getAttribute('auteur_id')),
+        ])->render();
+    }
+
+    private function logo(?Organisation $organisation): ?string
+    {
+        return $organisation?->logo_chemin !== null && Storage::disk('local')->exists($organisation->logo_chemin)
+            ? 'data:'.Storage::disk('local')->mimeType($organisation->logo_chemin).';base64,'.base64_encode((string) Storage::disk('local')->get($organisation->logo_chemin))
+            : null;
     }
 
     private function recu(): Recu

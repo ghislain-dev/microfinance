@@ -183,7 +183,7 @@
             <div class="card-header">Remboursements</div>
             <div class="table-responsive">
                 <table class="table mb-0 small">
-                    <thead><tr><th>Date</th><th>Mode</th><th class="text-end">Montant</th><th class="text-end">Pénalités</th><th class="text-end">Intérêts</th><th class="text-end">Capital</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Mode</th><th class="text-end">Montant</th><th class="text-end">Pénalités</th><th class="text-end">Intérêts</th><th class="text-end">Capital</th><th>Reçu</th></tr></thead>
                     <tbody>
                         @forelse ($remboursements as $r)
                             <tr>
@@ -193,9 +193,10 @@
                                 <td class="text-end">{{ $r->penalites->formate() }}</td>
                                 <td class="text-end">{{ $r->interets->formate() }}</td>
                                 <td class="text-end">{{ $r->capital->formate() }}</td>
+                                <td>@if ($r->recu) <a href="{{ route('recus.show', $r->recu) }}">{{ $r->recu->numero }}</a> @endif</td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-body-secondary py-3">Aucun remboursement.</td></tr>
+                            <tr><td colspan="7" class="text-center text-body-secondary py-3">Aucun remboursement.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

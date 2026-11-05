@@ -13,6 +13,7 @@ use App\Domain\Credit\Models\Remboursement;
 use App\Domain\Credit\ModeRemboursement;
 use App\Domain\Credit\StatutPret;
 use App\Domain\Epargne\Models\CompteEpargne;
+use App\Domain\Epargne\Recus\EmettreRecu;
 use App\Domain\Epargne\Services\Blocages;
 use App\Domain\Epargne\Services\RegleEpargne;
 use App\Domain\Finance\Actions\OuvrirCompte;
@@ -37,6 +38,7 @@ final class RembourserPret
         private readonly RegleEpargne $regles,
         private readonly OuvrirCompte $ouvrirCompte,
         private readonly Blocages $blocages,
+        private readonly EmettreRecu $recus,
     ) {}
 
     /**
@@ -132,6 +134,8 @@ final class RembourserPret
                 'session_caisse_id' => $session?->id,
                 'auteur_id' => auth()->id(),
             ])->save();
+
+            $this->recus->pourRemboursement($pret->organisation_id, $remboursement->id, $du->moins($montant));
 
             if ($montant->egal($du)) {
                 $pret->forceFill(['statut' => StatutPret::Solde, 'solde_le' => now()])->save();
